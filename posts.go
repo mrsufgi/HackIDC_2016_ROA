@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -8,57 +9,55 @@ import (
 	"github.com/labstack/echo"
 )
 
-// TODO remove after Ori pushes users.go
 type User struct {
 	Name string `json:"name"`
-	ID   int64  `json:"user_id"`
-}
-
-type Likes struct {
-	likes map[string]bool
-}
-
-func (set *Likes) like(uid int64) {
-	// TODO check DB if uid is actual user id
-	suid := strconv.FormatInt(uid, 10)
-	set.likes[suid] = !set.likes[suid]
+	ID   string `json:"user_id"`
 }
 
 type Post struct {
-	ID         int64     `json:"post_id"`
-	CreateTime time.Time `json:"create_time"`
-	EditTime   time.Time `json:"edit_time"`
-	CreatorID  int64     `json:"creator_id"`
-	Content    string    `json:"content"`
-	Likes      Likes     `json:"likes"`
+	ID         int               `json:"post_id"`
+	CreateTime time.Time         `json:"create_time"`
+	EditTime   time.Time         `json:"edit_time"`
+	CreatorID  string            `json:"creator_id"`
+	Content    string            `json:"content"`
+	Likes      map[string]string `json:"likes"`
 }
 
 var (
-	posts = map[int64]*Post{}
-	seq   = int64(1)
+	posts = map[int]*Post{}
+	seq   = 1
 )
 
 func getAllPosts(c echo.Context) error {
 	tmpPosts := map[string]*Post{}
-	keys := make([]int64, 0, len(posts))
+	keys := make([]int, 0, len(posts))
 	for k := range posts {
 		keys = append(keys, k)
 	}
 
 	for _, i := range keys {
-		tmpPosts[strconv.FormatInt(i, 10)] = posts[i]
+		tmpPosts[strconv.Itoa(i)] = posts[i]
+		fmt.Println(posts[i].Likes)
 	}
 	return c.JSON(http.StatusOK, tmpPosts)
 }
 
 func likePost(c echo.Context) error {
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id, _ := strconv.Atoi(c.Param("id"))
 	u := new(User)
 	if err := c.Bind(u); err != nil {
 		return err
 	}
 
-	posts[id].Likes.like(u.ID)
+	if posts[id] != nil {
+		// TODO check DB if uid is actual user id
+		_, ok := posts[id].Likes[u.ID]
+		if !ok {
+			posts[id].Likes[u.ID] = u.Name
+		} else {
+			delete(posts[id].Likes, u.ID)
+		}
+	}
 
 	return c.JSON(http.StatusOK, posts[id])
 }
@@ -67,6 +66,7 @@ func createPost(c echo.Context) error {
 	p := &Post{
 		ID:         seq,
 		CreateTime: time.Now(),
+		Likes:      map[string]string{},
 	}
 	if err := c.Bind(p); err != nil {
 		return err
@@ -78,7 +78,7 @@ func createPost(c echo.Context) error {
 }
 
 func getPost(c echo.Context) error {
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id, _ := strconv.Atoi(c.Param("id"))
 	return c.JSON(http.StatusOK, posts[id])
 }
 
@@ -92,7 +92,7 @@ func editPost(c echo.Context) error {
 		return err
 	}
 
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id, _ := strconv.Atoi(c.Param("id"))
 	if editor.ID == posts[id].CreatorID {
 		posts[id].Content = p.Content
 		posts[id].EditTime = time.Now()
@@ -108,7 +108,7 @@ func deletePost(c echo.Context) error {
 		return err
 	}
 	// TODO check post id same as user id
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id, _ := strconv.Atoi(c.Param("id"))
 	delete(posts, id)
 	return c.NoContent(http.StatusNoContent)
 }
