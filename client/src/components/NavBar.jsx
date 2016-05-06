@@ -14,7 +14,7 @@ var NavBar = React.createClass({
 				<Navbar.Header>
 					<Navbar.Brand>
 						<Link to='/'>
-							RoasteMe!
+							RoastMe!
 						</Link>
 					</Navbar.Brand>
 					<Navbar.Toggle />

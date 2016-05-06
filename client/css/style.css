@@ -2,5 +2,14 @@
     color:red;
 }
 .roast-card{
+    display: block;
+    margin:0 auto;
     border: 1px solid black;
+    max-width: 100%;
+    width:302px;
+}
+.roast-card img{
+    width:300px;
+    display: block;
+    margin:auto;
 }
