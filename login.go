@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"time"
 
+	_ "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
-	_"github.com/labstack/echo/engine/standard"
-	_"github.com/labstack/echo/middleware"
-	_"github.com/auth0/go-jwt-middleware"
+	_ "github.com/labstack/echo/engine/standard"
+	_ "github.com/labstack/echo/middleware"
 )
 
 func login(c echo.Context) error {

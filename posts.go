@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -9,23 +8,18 @@ import (
 	"github.com/labstack/echo"
 )
 
-type User struct {
-	Name string `json:"name"`
-	ID   string `json:"user_id"`
-}
-
 type Post struct {
 	ID         int               `json:"post_id"`
 	CreateTime time.Time         `json:"create_time"`
 	EditTime   time.Time         `json:"edit_time"`
-	CreatorID  string            `json:"creator_id"`
+	CreatorID  int               `json:"creator_id"`
 	Content    string            `json:"content"`
 	Likes      map[string]string `json:"likes"`
 }
 
 var (
-	posts = map[int]*Post{}
-	seq   = 1
+	posts    = map[int]*Post{}
+	post_seq = 1
 )
 
 func getAllPosts(c echo.Context) error {
@@ -37,26 +31,22 @@ func getAllPosts(c echo.Context) error {
 
 	for _, i := range keys {
 		tmpPosts[strconv.Itoa(i)] = posts[i]
-		fmt.Println(posts[i].Likes)
 	}
 	return c.JSON(http.StatusOK, tmpPosts)
 }
 
 func likePost(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	u := new(User)
+	u := new(user)
 	if err := c.Bind(u); err != nil {
 		return err
 	}
 
-	if posts[id] != nil {
-		// TODO check DB if uid is actual user id
-		_, ok := posts[id].Likes[u.ID]
-		if !ok {
-			posts[id].Likes[u.ID] = u.Name
-		} else {
-			delete(posts[id].Likes, u.ID)
-		}
+	suid := strconv.Itoa(u.UserID)
+	if _, ok := posts[id].Likes[suid]; !ok {
+		posts[id].Likes[suid] = u.Name
+	} else {
+		delete(posts[id].Likes, suid)
 	}
 
 	return c.JSON(http.StatusOK, posts[id])
@@ -64,16 +54,15 @@ func likePost(c echo.Context) error {
 
 func createPost(c echo.Context) error {
 	p := &Post{
-		ID:         seq,
+		ID:         post_seq,
 		CreateTime: time.Now(),
-		Likes:      map[string]string{},
 	}
 	if err := c.Bind(p); err != nil {
 		return err
 	}
 
 	posts[p.ID] = p
-	seq++
+	post_seq++
 	return c.JSON(http.StatusCreated, p)
 }
 
@@ -83,7 +72,7 @@ func getPost(c echo.Context) error {
 }
 
 func editPost(c echo.Context) error {
-	editor := new(User)
+	editor := new(user)
 	if err := c.Bind(editor); err != nil {
 		return err
 	}
@@ -93,7 +82,7 @@ func editPost(c echo.Context) error {
 	}
 
 	id, _ := strconv.Atoi(c.Param("id"))
-	if editor.ID == posts[id].CreatorID {
+	if editor.UserID == posts[id].CreatorID {
 		posts[id].Content = p.Content
 		posts[id].EditTime = time.Now()
 		return c.JSON(http.StatusOK, posts[id])
@@ -103,7 +92,7 @@ func editPost(c echo.Context) error {
 }
 
 func deletePost(c echo.Context) error {
-	creator := new(User)
+	creator := new(user)
 	if err := c.Bind(creator); err != nil {
 		return err
 	}

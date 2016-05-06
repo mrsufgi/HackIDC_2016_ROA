@@ -3,15 +3,15 @@ package main
 import (
 	"net/http"
 	"strconv"
+
 	"github.com/labstack/echo"
 )
 
 type (
 	user struct {
 		UserID   int    `json:"userid"`
-		Password   string    `json:"password"`
-		Name string `json:"name"`
-
+		Password string `json:"password"`
+		Name     string `json:"name"`
 	}
 )
 
@@ -56,4 +56,3 @@ func deleteUser(c echo.Context) error {
 	delete(users, id)
 	return c.NoContent(http.StatusNoContent)
 }
-

@@ -5,15 +5,16 @@ import (
 	"os"
 
 	"github.com/labstack/echo"
-	_"github.com/labstack/echo/engine/fasthttp"
+	_ "github.com/labstack/echo/engine/fasthttp"
 	"github.com/labstack/echo/middleware"
 	"github.com/mewben/config-echo"
 	//_ "github.com/lib/pq"
 	//"github.com/mewben/db-go-env"
-	"github.com/labstack/echo/engine/standard"
-	r "github.com/dancannon/gorethink"
-	"log"
 	"fmt"
+	"log"
+
+	r "github.com/dancannon/gorethink"
+	"github.com/labstack/echo/engine/standard"
 )
 
 // Initialize Port and DB Connection config
@@ -73,9 +74,8 @@ func main() {
 
 	app.Run(standard.New(config.Port))
 
-
 	session, err := r.Connect(r.ConnectOpts{
-		Address: "localhost:28015",
+		Address:  "localhost:28015",
 		Database: "test",
 	})
 	if err != nil {
@@ -84,4 +84,3 @@ func main() {
 
 	fmt.Println(session.IsConnected())
 }
-
