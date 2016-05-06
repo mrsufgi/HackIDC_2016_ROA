@@ -3,14 +3,29 @@
 }
 .roast-card{
 
-    margin:1em auto;
-    border: 1px solid black;
-    max-width: 100%;
-    width:302px;
-
+    /*border-radius: 5px;*/
+    /*margin:1em auto;*/
+    /*border: 1px solid black;*/
+    /*!*max-width: 100%;*!*/
+    /*!*width:302px;*!*/
 }
 .roast-card img{
-    width:300px;
+    padding: 0;
+    width:100%;
+
     display: block;
-    margin:auto;
+    margin:0 auto;
+}
+.no-style,.no-style:visited{
+    color:rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-family: cursive;
+    transition: all 0.2s ease;
+}
+.no-style:hover,.no-style:link, .no-style:hover, .no-style:focus, .no-style:active{
+    text-decoration: none;
+    color: rgba(255,255,0,0.9);
+}
+.no-style:focus{
+    outline:none;
 }
