@@ -55,7 +55,7 @@ var RoastCardActions = React.createClass({
 						</Button>
 					</td>
 					<td style={{width: '50%'}}>
-						<Button style={{width: '90%', margin: 'auto'}} bsStyle='danger' onClick={this.dislike}>
+						<Button style={{width: '100%', margin: 'auto'}} bsStyle='danger' onClick={this.dislike}>
 							<div>
 								{this.state.dislike} <FontAwesome name='thumbs-o-down'/>
 							</div>
