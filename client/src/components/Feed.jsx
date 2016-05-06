@@ -1,5 +1,7 @@
 var React = require('react');
 var RoastCard = require('../components/RoastCard.jsx');
+import {Grid, Row, Col} from 'react-bootstrap';
+
 var Feed = React.createClass({
 	propTypes: {
 		children: React.PropTypes.element,
@@ -40,13 +42,19 @@ var Feed = React.createClass({
 		}
 	],
 	render() {
-		var data = this.dummyRoastCard.map((card) => {
-			return <RoastCard cardData={card}/>;
+		var data = this.dummyRoastCard.map((card, i) => {
+			return (
+				<Col xs={12} md={4}>
+					<RoastCard cardData={card} key={i}/>
+				</Col>
+			);
 		});
 		return (
-			<div>
-				{data}
-			</div>
+			<Grid>
+				<Row className='show-grid'>
+					{data}
+				</Row>
+			</Grid>
 		);
 	}
 });
