@@ -10,6 +10,7 @@ var Feed = React.createClass({
 	dummyRoastCard: [1, 2, 3, 4, 5].map((x) => {
 		return (
 		{
+			id: 1234,
 			title: 'Roast me mofos!',
 			name: 'Aviadhahami',
 			roastPicSrc: 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xaf1/v/t1.0-1/p160x160/11898648_10207488666114110_1556072271457749853_n.jpg?oh=cf32c5a9d4cf727242c7de8bbf1e7e03&oe=57B4AED5&__gda__=1474549326_40ee7ad9336e48a8d66cece017b1e6c0',
