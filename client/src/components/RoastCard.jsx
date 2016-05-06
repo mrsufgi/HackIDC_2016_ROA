@@ -11,7 +11,7 @@ var RoastCard = React.createClass({
 	},
 	render() {
 		return (
-			<div className='roast-card'>
+			<div className='roast-card shadow'>
 				<Panel header={<CustomPanelHeader title={this.props.cardData.title} user={this.props.cardData.name}/>} bsStyle='primary' footer={<RoastCardActions id={this.props.cardData.id} />}>
 					<div>
 						<RoastCardPic pic={this.props.cardData.roastPicSrc}></RoastCardPic>
