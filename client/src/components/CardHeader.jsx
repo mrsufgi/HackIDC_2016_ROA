@@ -1,6 +1,6 @@
 var React = require('react');
 
-var CardHeader = React.createClass({
+var CardContent = React.createClass({
 	propTypes: {
 		name: React.PropTypes.string,
 		pic: React.PropTypes.string,
@@ -9,11 +9,9 @@ var CardHeader = React.createClass({
 	render() {
 		return (
 			<div className='roast-card-header'>
-				<img src={this.props.pic} alt='pic'/>
-				<h3>{this.props.title}</h3>
-				<small>by {this.props.name}</small>
+				<img className='roast-card-img' src={this.props.pic} alt='pic'/>
 			</div>
 		);
 	}
 });
-module.exports = CardHeader;
+module.exports = CardContent;

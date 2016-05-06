@@ -3,16 +3,11 @@
 }
 .roast-card{
 
-    /*border-radius: 5px;*/
-    /*margin:1em auto;*/
-    /*border: 1px solid black;*/
-    /*!*max-width: 100%;*!*/
-    /*!*width:302px;*!*/
 }
-.roast-card img{
+.roast-card-img{
     padding: 0;
     width:100%;
-
+    border-radius: 5px;
     display: block;
     margin:0 auto;
 }
