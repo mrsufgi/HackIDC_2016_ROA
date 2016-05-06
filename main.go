@@ -5,11 +5,15 @@ import (
 	"os"
 
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/fasthttp"
+	_"github.com/labstack/echo/engine/fasthttp"
 	"github.com/labstack/echo/middleware"
 	"github.com/mewben/config-echo"
 	//_ "github.com/lib/pq"
 	//"github.com/mewben/db-go-env"
+	"github.com/labstack/echo/engine/standard"
+	r "github.com/dancannon/gorethink"
+	"log"
+	"fmt"
 )
 
 // Initialize Port and DB Connection config
@@ -41,13 +45,43 @@ func init() {
 	config.Setup(devConfig.SERVERPORT)
 }
 
+var session *r.Session
+
 func main() {
 	app := echo.New()
-
 	app.Use(middleware.Recover())
 	app.Use(middleware.Logger())
 	app.Use(middleware.Gzip())
-	app.Use(middleware.Static("public"))
+	//app.Use(middleware.Static("public"))
 
-	app.Run(fasthttp.New(config.Port))
+	// Routes
+	app.POST("/users", createUser)
+	app.GET("/users/:id", getUser)
+	app.PUT("/users/:id", updateUser)
+	app.DELETE("/users/:id", deleteUser)
+
+	// Login route
+	app.POST("/login", login)
+
+	// Unauthenticated route
+	app.GET("/", accessible)
+
+	// Restricted group
+	b := app.Group("/restricted")
+	b.Use(middleware.JWTAuth([]byte("secret")))
+	b.GET("", restricted)
+
+	app.Run(standard.New(config.Port))
+
+
+	session, err := r.Connect(r.ConnectOpts{
+		Address: "localhost:28015",
+		Database: "test",
+	})
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	fmt.Println(session.IsConnected())
 }
+
