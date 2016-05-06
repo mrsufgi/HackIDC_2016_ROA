@@ -18,6 +18,8 @@ type Post struct {
 	Likes      map[string]string `json:"likes"`
 }
 
+var postsTable string = "posts"
+
 //var (
 //	posts    = map[int]*Post{}
 //	post_seq = 1
@@ -26,7 +28,7 @@ type Post struct {
 func getLastPosts(c echo.Context) error {
 	num, _ := strconv.Atoi(c.Param("num"))
 
-	cur, err := r.DB("test").Table("mytable").OrderBy(r.OrderByOpts{
+	cur, err := r.DB("test").Table(postsTable).OrderBy(r.OrderByOpts{
 		Index: r.Desc("CreateTime"),
 	}).Run(session)
 
@@ -54,21 +56,16 @@ func getLastPosts(c echo.Context) error {
 }
 
 func getAllPosts(c echo.Context) error {
-	//	tmpPosts := map[string]*Post{}
-	//	keys := make([]int, 0, len(posts))
-	//	for k := range posts {
-	//		keys = append(keys, k)
-	//	}
-
-	//	for _, i := range keys {
-	//		tmpPosts[strconv.Itoa(i)] = posts[i]
-	//	}
-
-	resp, err := r.DB("test").Table("posts")
+	cur, err := r.DB("test").Table(postsTable).OrderBy(r.OrderByOpts{
+		Index: r.Desc("CreateTime"),
+	}).Run(session)
+	var res []interface{}
+	err = cur.All(&res)
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, resp.Table())
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func likePost(c echo.Context) error {
