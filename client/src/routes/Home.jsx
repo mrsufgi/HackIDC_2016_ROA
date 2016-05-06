@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 var Header = require('../components/Header.jsx');
+var Feed = require('../components/Feed.jsx');
+
 class Home extends Component {
 	render() {
 		return (
-			<Header>
-				<h1>test1</h1>
-				<h2>another one</h2>
-			</Header>
+			<div>
+				<Header/>
+				<Feed />
+			</div>
 		);
 	}
 }
