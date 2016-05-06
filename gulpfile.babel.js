@@ -26,9 +26,12 @@ gulp.task('default', ['server:watch'], () => {
 	console.log('🌎  ===> Client at http://localhost:' + config.client_port);
 });
 
-// ======== SERVER:WATCH ==== //
-gulp.task('server:watch', sync(['server:build', 'server:spawn']), () => {
-	gulp.watch('./**/*.go', sync(['server:build', 'server:spawn'])).on('change', logChanges);
+// // ======== SERVER:WATCH ==== //
+// gulp.task('server:watch', sync(['server:build', 'server:spawn']), () => {
+// 	gulp.watch('./**/*.go', sync(['server:build', 'server:spawn'])).on('change', logChanges);
+// });
+gulp.task('server:watch', sync(['server:build']), () => {
+	gulp.watch('./**/*.go', sync(['server:build'])).on('change', logChanges);
 });
 
 function logChanges(event) {
