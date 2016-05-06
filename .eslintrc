@@ -12,13 +12,13 @@
 		"react"
 	],
 	"rules": {
-//		"indent": [
-//			"error",
-//			"tab",
-//			{
-//				"SwitchCase": 1
-//			}
-//		],
+		"indent": [
+			"error",
+			"tab",
+			{
+				"SwitchCase": 1
+			}
+		],
 		"semi": ["error", "always"],
 		"space-before-function-paren": ["error", "never"]
 	}

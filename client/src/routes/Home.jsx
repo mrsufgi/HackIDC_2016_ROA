@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-var Header = require('../components/Header.js');
-
+// var Header = require('../components/Header.jsx');
+import Header from '../components/Header.jsx';
 class Home extends Component {
-	render() {
+	static render() {
 		return (
-			<Header></Header>
-			// <Feed></Feed>
+			<Header>
+				<h1>test</h1>
+			</Header>
 		);
 	}
 }
 
-module.exports = Home;
+export default Home;

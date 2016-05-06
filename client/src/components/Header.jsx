@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-
 class Header extends Component {
-    render() {
-        return(
-            <p>test</p>
-        );
-    }
+	render() {
+		return (
+			<h1>test2</h1>
+		);
+	}
 }
 
 export default Header;
