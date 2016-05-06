@@ -22,6 +22,6 @@
     text-decoration: none;
     color: rgba(255,255,0,0.9);
 }
-.no-style:focus{
+.no-style:focus, button:focus{
     outline:none;
 }
