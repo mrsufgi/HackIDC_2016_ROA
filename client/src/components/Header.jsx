@@ -1,10 +1,15 @@
-import React, { Component } from 'react';
-class Header extends Component {
+var React = require('react');
+var Header = React.createClass({
+	propTypes: {
+		children: React.PropTypes.element
+	},
 	render() {
 		return (
-			<h1>test2</h1>
+			<div>
+				{this.props.children}
+			</div>
 		);
 	}
-}
+});
 
-export default Header;
+module.exports = Header;
