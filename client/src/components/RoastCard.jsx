@@ -1,5 +1,5 @@
 var React = require('react');
-var CardHeader = require('../components/CardHeader.jsx');
+var RoastCardPic = require('../components/RoastCardPic.jsx');
 var CommentBox = require('../components/CommentBox.jsx');
 var CustomPanelHeader = require('../components/CustomPanelHeader.jsx');
 import {Panel} from 'react-bootstrap';
@@ -12,9 +12,7 @@ var RoastCard = React.createClass({
 		return (
 			<div className='roast-card'>
 				<Panel header={<CustomPanelHeader title={this.props.cardData.title} user={this.props.cardData.name}/>} bsStyle='primary'>
-					<CardHeader name={this.props.cardData.name}
-								pic={this.props.cardData.roastPicSrc}>
-					</CardHeader>
+					<RoastCardPic pic={this.props.cardData.roastPicSrc} />
 					<CommentBox comments={this.props.cardData.comments}></CommentBox>
 				</Panel>
 
