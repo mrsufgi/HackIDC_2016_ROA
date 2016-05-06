@@ -10,11 +10,11 @@ var CustomPanelHeader = React.createClass({
 		var link = '/user/' + this.props.user;
 		return (
 			<div className='show-grid'>
-				{this.props.title} (
+				{this.props.title}
 				<Link to={link} className='no-style'>
 					{this.props.user}
 				</Link>
-				)
+
 			</div>
 		);
 	}
