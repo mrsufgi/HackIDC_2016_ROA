@@ -1,6 +1,6 @@
 import { Navbar, Nav, NavDropdown, NavItem, MenuItem } from 'react-bootstrap';
 var React = require('react');
-var Header = React.createClass({
+var NavBar = React.createClass({
 	style: {
 		list: {
 			color: 'blue'
@@ -15,22 +15,23 @@ var Header = React.createClass({
 			<Navbar inverse>
 				<Navbar.Header>
 					<Navbar.Brand>
-						<a href='#'>RoastMe!</a>
+						<a href='/'>RoastMe!</a>
 					</Navbar.Brand>
 					<Navbar.Toggle />
 				</Navbar.Header>
 				<Navbar.Collapse>
 					<Nav>
-						<NavItem eventKey={1} href='#'>Feed</NavItem>
-						<NavItem eventKey={2} href='#'>Link</NavItem>
+						<NavItem href='#'>New</NavItem>
+						<NavItem href='#'>Trending</NavItem>
+						<NavItem href='#'>Favorites</NavItem>
 					</Nav>
 					<Nav pullRight>
-						<NavDropdown eventKey={3} title='Profile' id='basic-nav-dropdown'>
-							<MenuItem eventKey={3.1}>Me</MenuItem>
-							<MenuItem eventKey={3.2}>Edit Profile</MenuItem>
-							<MenuItem eventKey={3.3}></MenuItem>
+						<NavDropdown title='Profile' id='basic-nav-dropdown'>
+							<MenuItem>My Profile</MenuItem>
+							<MenuItem>Edit Profile</MenuItem>
+							<MenuItem></MenuItem>
 							<MenuItem divider />
-							<MenuItem eventKey={3.3}>Sign Out</MenuItem>
+							<MenuItem>Sign Out</MenuItem>
 						</NavDropdown>
 					</Nav>
 				</Navbar.Collapse>
@@ -39,4 +40,4 @@ var Header = React.createClass({
 	}
 });
 
-module.exports = Header;
+module.exports = NavBar;

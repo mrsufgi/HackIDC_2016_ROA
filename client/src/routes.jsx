@@ -2,10 +2,9 @@ import React from 'react';
 import Route from 'react-router/lib/Route';
 
 import App from './routes/App';
-import Home from './routes/Home';
-
+import Feed from './components/Feed.jsx';
 export default (
 	<Route component={App}>
-		<Route path='/' component={Home} />
+		<Route path='/' component={Feed} />
 	</Route>
 );
