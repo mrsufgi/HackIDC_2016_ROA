@@ -1,4 +1,4 @@
-// import { Button } from 'react-bootstrap';
+import { Nav } from 'react-bootstrap';
 var React = require('react');
 var Header = React.createClass({
 	style: {
@@ -12,7 +12,7 @@ var Header = React.createClass({
 	},
 	render() {
 		return (
-			<nav className='navbar navbar-default'>
+			<Nav className='navbar navbar-default'>
 				<div className='container-fluid'>
 					<div className='navbar-header'>
 						<button type='button' className='navbar-toggle collapsed' data-toggle='collapse' data-target='#bs-example-navbar-collapse-1' aria-expanded='false'>
@@ -61,7 +61,7 @@ var Header = React.createClass({
 						</ul>
 					</div>
 				</div>
-			</nav>
+			</Nav>
 		);
 	}
 });
