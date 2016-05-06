@@ -1,3 +1,6 @@
 .roast-card-header{
     color:red;
 }
+.roast-card{
+    border: 1px solid black;
+}

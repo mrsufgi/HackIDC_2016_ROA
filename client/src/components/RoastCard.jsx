@@ -8,7 +8,7 @@ var RoastCard = React.createClass({
 	},
 	render() {
 		return (
-			<div>
+			<div className='roast-card'>
 				<CardHeader name={this.props.cardData.name}
 							pic={this.props.cardData.roastPicSrc}
 							title={this.props.cardData.title}>
