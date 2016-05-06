@@ -1,6 +1,7 @@
 import { Navbar, Nav, NavDropdown, NavItem, MenuItem } from 'react-bootstrap';
 import React from 'react';
 import { Link } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 
 var NavBar = React.createClass({
 	propTypes: {
@@ -26,16 +27,16 @@ var NavBar = React.createClass({
 					</Nav>
 					<Nav pullRight>
 						<NavDropdown title='Profile' id='basic-nav-dropdown'>
-							<MenuItem>
-								<Link to='/profile'>
+							<LinkContainer to='/profile'>
+								<MenuItem>
 									My Profile
-								</Link>
-							</MenuItem>
-							<MenuItem>
-								<Link to='/editProfile'>
+								</MenuItem>
+							</LinkContainer>
+							<LinkContainer to='/editProfile'>
+								<MenuItem>
 									Edit Profile
-								</Link>
-							</MenuItem>
+								</MenuItem>
+							</LinkContainer>
 							<MenuItem divider />
 							<MenuItem>Sign Out</MenuItem>
 						</NavDropdown>
