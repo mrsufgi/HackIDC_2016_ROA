@@ -11,13 +11,13 @@ var RoastCardActions = React.createClass({
 			<table style={{width: '100%'}}>
 				<tr>
 					<td style={{width: '50%'}}>
-						<Button style={{width: '90%', margin: 'auto'}} bsStyle='danger'>
-							<FontAwesome name='thumbs-o-down'/>
+						<Button style={{width: '90%', margin: 'auto'}} bsStyle='success'>
+							<FontAwesome name='thumbs-o-up' />
 						</Button>
 					</td>
 					<td style={{width: '50%'}}>
-						<Button style={{width: '90%', margin: 'auto'}} bsStyle='success'>
-							<FontAwesome name='thumbs-o-up' />
+						<Button style={{width: '90%', margin: 'auto'}} bsStyle='danger'>
+							<FontAwesome name='thumbs-o-down'/>
 						</Button>
 					</td>
 				</tr>
