@@ -7,7 +7,8 @@ var Feed = React.createClass({
 		children: React.PropTypes.element,
 		dummy: React.PropTypes.object
 	},
-	dummyRoastCard: [
+	dummyRoastCard: [1, 2, 3, 4, 5].map((x) => {
+		return (
 		{
 			title: 'Roast me mofos!',
 			name: 'Aviadhahami',
@@ -22,25 +23,9 @@ var Feed = React.createClass({
 					}
 				}
 			]
-
-		},
-		{
-			title: 'What do you think about me?2',
-			name: 'nadavg',
-			roastPicSrc: 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xaf1/v/t1.0-1/c0.0.160.160/p160x160/1535443_10203361054681037_1835679698273652054_n.jpg?oh=a422a89c222fe4f4f6a6d017c31c46ba&oe=57997593&__gda__=1470518677_71e3f57d5434c6abd3ec9d55afd6736e',
-			comments: [
-				{
-					content: '',
-					user: '',
-					score: {
-						up: 5,
-						down: 9
-					}
-				}
-			]
-
 		}
-	],
+		);
+	}),
 	render() {
 		var data = this.dummyRoastCard.map((card, i) => {
 			return (
