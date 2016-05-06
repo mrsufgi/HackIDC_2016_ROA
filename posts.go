@@ -5,34 +5,67 @@ import (
 	"strconv"
 	"time"
 
+	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo"
 )
 
 type Post struct {
 	ID         int               `json:"post_id"`
-	CreateTime time.Time         `json:"create_time"`
-	EditTime   time.Time         `json:"edit_time"`
+	CreateTime int64             `json:"create_time"`
+	EditTime   int64             `json:"edit_time"`
 	CreatorID  int               `json:"creator_id"`
 	Content    string            `json:"content"`
 	Likes      map[string]string `json:"likes"`
 }
 
-var (
-	posts    = map[int]*Post{}
-	post_seq = 1
-)
+var postsTable string = "posts"
+
+//var (
+//	posts    = map[int]*Post{}
+//	post_seq = 1
+//)
+
+func getLastPosts(c echo.Context) error {
+	num, _ := strconv.Atoi(c.Param("num"))
+
+	cur, err := r.DB("test").Table(postsTable).OrderBy(r.OrderByOpts{
+		Index: r.Desc("CreateTime"),
+	}).Run(session)
+
+	if err != nil {
+		return err
+	}
+	res := make(chan interface{}, num)
+	var next interface{}
+	for i := 0; i < num; i++ {
+		if !cur.Next(&next) {
+			break
+		}
+		res <- next
+	}
+
+	close(res)
+	ans := make([]interface{}, len(res))
+	i := 0
+	for elem := range res {
+		ans[i] = elem
+		i++
+	}
+
+	return c.JSON(http.StatusOK, ans)
+}
 
 func getAllPosts(c echo.Context) error {
-	tmpPosts := map[string]*Post{}
-	keys := make([]int, 0, len(posts))
-	for k := range posts {
-		keys = append(keys, k)
+	cur, err := r.DB("test").Table(postsTable).OrderBy(r.OrderByOpts{
+		Index: r.Desc("CreateTime"),
+	}).Run(session)
+	var res []interface{}
+	err = cur.All(&res)
+	if err != nil {
+		return err
 	}
 
-	for _, i := range keys {
-		tmpPosts[strconv.Itoa(i)] = posts[i]
-	}
-	return c.JSON(http.StatusOK, tmpPosts)
+	return c.JSON(http.StatusOK, res)
 }
 
 func likePost(c echo.Context) error {
@@ -55,7 +88,8 @@ func likePost(c echo.Context) error {
 func createPost(c echo.Context) error {
 	p := &Post{
 		ID:         post_seq,
-		CreateTime: time.Now(),
+		CreateTime: time.Now().Unix(),
+		EditTime:   time.Now().Unix(),
 	}
 	if err := c.Bind(p); err != nil {
 		return err
