@@ -1,0 +1,9 @@
+package: projects/go-react-project
+import:
+- package: github.com/labstack/echo
+  subpackages:
+  - engine/fasthttp
+  - middleware
+- package: github.com/mewben/config-echo
+excludeDirs:
+- node_modules
