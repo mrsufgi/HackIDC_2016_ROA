@@ -2,18 +2,17 @@ package main
 
 import (
 	"encoding/json"
-	"os"
-
 	"github.com/labstack/echo"
-	_"github.com/labstack/echo/engine/fasthttp"
+	_ "github.com/labstack/echo/engine/fasthttp"
 	"github.com/labstack/echo/middleware"
 	"github.com/mewben/config-echo"
+	"os"
 	//_ "github.com/lib/pq"
 	//"github.com/mewben/db-go-env"
-	"github.com/labstack/echo/engine/standard"
+	_ "fmt"
 	r "github.com/dancannon/gorethink"
+	"github.com/labstack/echo/engine/standard"
 	"log"
-	"fmt"
 )
 
 // Initialize Port and DB Connection config
@@ -46,8 +45,18 @@ func init() {
 }
 
 var session *r.Session
+var dbName string = "RoastMe"
 
 func main() {
+	se, err := r.Connect(r.ConnectOpts{
+		Address:  "localhost:28015",
+		Database: "RoastMe",
+	})
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	session = se
+
 	app := echo.New()
 	app.Use(middleware.Recover())
 	app.Use(middleware.Logger())
@@ -72,16 +81,4 @@ func main() {
 	b.GET("", restricted)
 
 	app.Run(standard.New(config.Port))
-
-
-	session, err := r.Connect(r.ConnectOpts{
-		Address: "localhost:28015",
-		Database: "test",
-	})
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	fmt.Println(session.IsConnected())
 }
-

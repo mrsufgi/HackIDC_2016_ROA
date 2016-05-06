@@ -1,37 +1,49 @@
 package main
 
 import (
-	"net/http"
-	"time"
-
+	"fmt"
+	r "github.com/dancannon/gorethink"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
-	_"github.com/labstack/echo/engine/standard"
-	_"github.com/labstack/echo/middleware"
-	_"github.com/auth0/go-jwt-middleware"
+	_ "github.com/labstack/echo/engine/standard"
+	_ "github.com/labstack/echo/middleware"
+	"net/http"
+	"time"
 )
 
 func login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 
-	if username == "jon" && password == "shhh!" {
-		// Create token
-		token := jwt.New(jwt.SigningMethodHS256)
+	//if username == "jon" && password == "shhh!" {
+	res, _ := r.Table("Users").GetAllByIndex("username", username).Run(session)
 
-		// Set claims
-		token.Claims["name"] = "Jon Snow"
-		token.Claims["admin"] = true
-		token.Claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-
-		// Generate encoded token and send it as response.
-		t, err := token.SignedString([]byte("secret"))
+	if !res.IsNil() {
+		var pass map[string]interface{}
+		err := res.One(&pass)
 		if err != nil {
-			return err
+			fmt.Printf("Error scanning database result: %s", err)
+			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
-		return c.JSON(http.StatusOK, map[string]string{
-			"token": t,
-		})
+
+		if password == pass["password"] {
+			// Create token
+			token := jwt.New(jwt.SigningMethodHS256)
+
+			// Set claims
+			token.Claims["name"] = "Jon Snow"
+			token.Claims["admin"] = true
+			token.Claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+
+			// Generate encoded token and send it as response.
+			t, err := token.SignedString([]byte("secret"))
+			if err != nil {
+				return err
+			}
+			return c.JSON(http.StatusOK, map[string]string{
+				"token": t,
+			})
+		}
 	}
 
 	return echo.ErrUnauthorized

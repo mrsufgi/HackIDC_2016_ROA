@@ -1,43 +1,65 @@
 package main
 
 import (
-	"net/http"
-	"strconv"
+	"fmt"
+	_ "fmt"
+	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo"
+	"net/http"
+	_ "strconv"
 )
 
 type (
 	user struct {
-		UserID   int    `json:"userid"`
-		Password   string    `json:"password"`
-		Name string `json:"name"`
-
+		ID       string `gorethink:"id,omitempty"`
+		Password string `gorethink:"password"`
+		Username string `gorethink:"username"`
 	}
 )
 
 var (
-	users = map[int]*user{}
-	seq   = 1
+	users = map[string]*user{}
 )
+
+func userUniq(username string) bool {
+	res, err := r.Table("Users").GetAllByIndex("username", username).Run(session)
+	if err != nil {
+		fmt.Print(err)
+		return false
+	}
+
+	if res.IsNil() {
+		fmt.Print("Entry wasn't found")
+		return true
+	}
+	defer res.Close()
+	return false
+}
 
 //----------
 // Handlers
 //----------
 
 func createUser(c echo.Context) error {
-	u := &user{
-		UserID: seq,
-	}
+	u := &user{}
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	users[u.UserID] = u
-	seq++
-	return c.JSON(http.StatusCreated, u)
+
+	if userUniq(u.Username) {
+
+		// db
+		r.Table("Users").Insert(u).RunWrite(session)
+
+		return c.JSON(http.StatusCreated, u)
+	}
+
+	return echo.NewHTTPError(http.StatusConflict)
 }
 
 func getUser(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
+
 	return c.JSON(http.StatusOK, users[id])
 }
 
@@ -46,14 +68,13 @@ func updateUser(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	id, _ := strconv.Atoi(c.Param("id"))
-	users[id].Name = u.Name
+	id := c.Param("id")
+	users[id].Username = u.Username
 	return c.JSON(http.StatusOK, users[id])
 }
 
 func deleteUser(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	delete(users, id)
 	return c.NoContent(http.StatusNoContent)
 }
-
