@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	_ "fmt"
 	r "github.com/dancannon/gorethink"
+
 	"github.com/labstack/echo"
 	"net/http"
 	_ "strconv"

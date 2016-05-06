@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 	r "github.com/dancannon/gorethink"
+
+	_ "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	_ "github.com/labstack/echo/engine/standard"
-	_ "github.com/labstack/echo/middleware"
-	"net/http"
-	"time"
 )
 
 func login(c echo.Context) error {
