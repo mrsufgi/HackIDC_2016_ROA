@@ -1,4 +1,4 @@
-package: projects/go-react-project
+package: github.com/mrsufgi/HackIDC_2016_ROA
 import:
 - package: github.com/labstack/echo
   subpackages:
