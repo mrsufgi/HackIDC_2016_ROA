@@ -1,3 +1,4 @@
+// import { Button } from 'react-bootstrap';
 var React = require('react');
 var Header = React.createClass({
 	style: {
@@ -11,16 +12,15 @@ var Header = React.createClass({
 	},
 	render() {
 		return (
-			<div>
-				<ul style={this.style}>
-					<li>
-						1
-					</li>
-					<li>
-						2
-					</li>
-				</ul>
-			</div>
+			<nav className='navbar navbar-default'>
+				<div className='container-fluid'>
+					<div className='navbar-header'>
+						<a className='navbar-brand' href='#'>
+							RoastMe!
+						</a>
+					</div>
+				</div>
+			</nav>
 		);
 	}
 });
