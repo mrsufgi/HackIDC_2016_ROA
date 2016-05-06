@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
+var Header = require('../components/Header.js');
 
 class Home extends Component {
-
 	render() {
 		return (
-			<h1>Home</h1>
+			<Header></Header>
+			// <Feed></Feed>
 		);
 	}
 }
 
-export default Home;
+module.exports = Home;
