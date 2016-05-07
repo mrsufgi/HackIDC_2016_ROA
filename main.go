@@ -14,6 +14,7 @@ import (
 	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo/engine/standard"
 	"log"
+	"fmt"
 )
 
 // Initialize Port and DB Connection config
@@ -82,13 +83,4 @@ func main() {
 	b.GET("", restricted)
 
 	app.Run(standard.New(config.Port))
-	session, err := r.Connect(r.ConnectOpts{
-		Address:  "localhost:28015",
-		Database: "test",
-	})
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	fmt.Println(session.IsConnected())
 }
