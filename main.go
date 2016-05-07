@@ -18,6 +18,23 @@ import (
 	"fmt"
 )
 
+var (
+	createTime  = "createTime"
+	editTime    = "editTime"
+	creatorId   = "creatorId"
+	creatorName = "creatorName"
+	title       = "title"
+	imageUrl    = "imageUrl"
+	postId      = "postId"
+	count       = "count"
+	id          = "id"
+	userId      = "userId"
+	commentId   = "commentId"
+	userName    = "userName"
+	password    = "password"
+	content     = "content"
+)
+
 // Initialize Port and DB Connection config
 func init() {
 	type Config struct {
@@ -50,6 +67,12 @@ func init() {
 var session *r.Session
 var dbName string = "RoastMe"
 
+func createTables() {
+	createLikesTable()
+	createCommentsTable()
+	createPostsTable()
+}
+
 func main() {
 	se, err := r.Connect(r.ConnectOpts{
 		Address:  "localhost:28015",
@@ -72,16 +95,16 @@ func main() {
 	app.PUT("/users/:id", updateUser)
 	app.DELETE("/users/:id", deleteUser)
 
-	// Posts Routes
-	app.GET("/likes/:id", getPostLikes)
-	app.GET("/post/:id", getPost)
-	app.GET("/all_posts", getAllPosts)
-	app.GET("/posts/:num", getLastPosts)
-	app.POST("/post/:id", editPost)
-	app.POST("/create_post", createPost)
-	app.POST("/delete_post", deletePost)
-	app.POST("/like_post", likePost)
-	app.POST("/edit_post", editPost)
+	// Comments Routes
+	app.GET("/comment/:id/likes", getCommentLikes)
+	app.GET("/comment/:id", getComment)
+	app.GET("/comment/all", getAllComments)
+	app.GET("/comment/head/:count", getLastComments)
+	app.GET("/comment/top_rated/:count", getTopComments)
+	app.POST("/comment/create", createComment)
+	app.POST("/comment/delete", deleteComment)
+	app.POST("/comment/like", likeComment)
+	app.POST("/comment/edit", editComment)
 
 	//app.GET("/feed", standard.WrapHandler(websocket.Handler(feedHandler)))
 	// Login route
@@ -95,6 +118,8 @@ func main() {
 	b := app.Group("/restricted")
 	b.Use(middleware.JWTAuth([]byte("secret")))
 	b.GET("", restricted)
+
+	createTables()
 
 	app.Run(standard.New(config.Port))
 }

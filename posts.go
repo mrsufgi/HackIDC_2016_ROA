@@ -11,44 +11,41 @@ import (
 	"github.com/labstack/echo"
 )
 
-type Like struct {
-	UserID string `json:"user_id"`
-	PostID string `json:"post_id"`
-}
-
 type Post struct {
-	CreateTime int64             `json:"create_time"`
-	EditTime   int64             `json:"edit_time"`
-	CreatorID  string            `json:"creator_id"`
-	Content    string            `json:"content"`
-	Likes      map[string]string `json:"likes"`
+	createTime  int64
+	editTime    int64
+	creatorId   string
+	creatorName string
+	title       string
+	imageUrl    string
 }
 
 var postsTable string = "posts"
-var likesTable string = "likes"
 
-func CreatePostsTable(c echo.Context) error {
-	// TODO
-	return nil
-}
-
-func CreateLikesTable(c echo.Context) error {
-	// TODO
-	return nil
+func createPostsTable() error {
+	indices := []string{
+		createTime,
+		editTime,
+		creatorId,
+		creatorName,
+		title,
+		imageUrl,
+	}
+	return createTable(postsTable, indices)
 }
 
 func getLastPosts(c echo.Context) error {
-	num, _ := strconv.Atoi(c.Param("num"))
+	num, _ := strconv.Atoi(c.Param(count))
 
-	cur, err := r.DB("test").Table(postsTable).OrderBy(r.OrderByOpts{
-		Index: r.Desc("CreateTime"),
-	}).Run(session)
+	cur, err := r.DB(dbName).Table(postsTable).OrderBy(r.OrderByOpts{
+		Index: r.Desc(createTime),
+	}).Limit(num).Run(session)
 
 	if err != nil {
 		return err
 	}
 
-	res, err := getDataFromCursor(cur, num)
+	res, err := getAllDataFromCursor(cur)
 
 	if err != nil {
 		return err
@@ -59,14 +56,15 @@ func getLastPosts(c echo.Context) error {
 
 func getAllPosts(c echo.Context) error {
 	cur, err := r.DB(dbName).Table(postsTable).OrderBy(r.OrderByOpts{
-		Index: r.Desc("CreateTime"),
+		Index: r.Desc(createTime),
 	}).Run(session)
 
 	if err != nil {
 		return err
 	}
 	if cur == nil {
-		errors.New("Error getting all posts. The cursor is nil!")
+		return c.JSON(http.StatusNoContent,
+			errors.New("Error getting all posts. The cursor is nil!"))
 	}
 
 	res, err := getAllDataFromCursor(cur)
@@ -77,47 +75,12 @@ func getAllPosts(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func likePost(c echo.Context) error {
-	data := make(map[string]string)
-	err := c.Bind(&data)
-	if err != nil {
-		return err
-	}
-
-	userId, postId := "user_id", "post_id"
+func getPostComments(c echo.Context) error {
 	filterMap := map[string]string{
-		"UserID": data[userId],
-		"PostID": data[postId],
-	}
-	ans, err := filterFromTable(likesTable, filterMap)
-
-	arr := ans.([]interface{})
-	// TODO add verification for user_id and post_id
-	if len(arr) == 0 {
-		like := &Like{
-			UserID: data[userId],
-			PostID: data[postId],
-		}
-		_, err = insertToTable(likesTable, like)
-	} else {
-		// All this just to get the uid from the returned object :(
-		id := ans.([]interface{})[0].(map[string]interface{})["id"].(string)
-		_, err = removeFromTable(likesTable, id)
+		postId: c.Param(id),
 	}
 
-	if err != nil {
-		return err
-	}
-
-	return getPostLikes(c)
-}
-
-func getPostLikes(c echo.Context) error {
-	filterMap := map[string]string{
-		"PostID": c.Param("id"),
-	}
-
-	ans, err := filterFromTable(likesTable, filterMap)
+	ans, err := filterFromTable(commentsTable, filterMap)
 
 	if err != nil {
 		return err
@@ -128,27 +91,27 @@ func getPostLikes(c echo.Context) error {
 
 func createPost(c echo.Context) error {
 	p := &Post{
-		CreateTime: time.Now().Unix(),
-		EditTime:   time.Now().Unix(),
+		createTime: time.Now().Unix(),
+		editTime:   time.Now().Unix(),
 	}
 
 	if err := c.Bind(p); err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, nil)
 	}
 
 	ans, err := insertToTable(postsTable, p)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
 	return c.JSON(http.StatusCreated, ans)
 }
 
 func getPost(c echo.Context) error {
-	fmt.Println(c.Param("id"))
-	ans, err := getFromTable(postsTable, c.Param("id"))
+	fmt.Println(c.Param(id))
+	ans, err := getFromTable(postsTable, c.Param(id))
 	if err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	fmt.Println(ans)
@@ -161,8 +124,9 @@ func editPost(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	data[editTime] = time.Now().Unix()
 	// TODO filter data to contain only existing fields, nothing new
-	res, err := updateFieldInTable(postsTable, data["id"].(string), data)
+	res, err := updateFieldInTable(postsTable, data[id].(string), data)
 	if err != nil {
 		return err
 	}
@@ -177,13 +141,13 @@ func deletePost(c echo.Context) error {
 		return err
 	}
 
-	UserID, ok := data["user_id"].(string)
+	UserID, ok := data[userId].(string)
 	if !ok {
-		return errors.New("user_id of the post creator must be supplied in order to delete a post")
+		return errors.New("UserID of the post creator must be supplied in order to delete a post")
 	}
-	PostID, ok := data["post_id"].(string)
+	PostID, ok := data[postId].(string)
 	if !ok {
-		return errors.New("post_id must be supplied in order to delete a post")
+		return errors.New("PostID must be supplied in order to delete a post")
 	}
 
 	res, err := getFromTable(postsTable, PostID)
@@ -193,14 +157,14 @@ func deletePost(c echo.Context) error {
 	if res == nil {
 		return errors.New("No such post exists!")
 	}
-	if res.(map[string]interface{})["CreatorID"].(string) == UserID {
+	if res.(map[string]interface{})[creatorId].(string) == UserID {
 		removed, err := removeFromTable(postsTable, PostID)
 		if err != nil {
-			return err
+			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
 
 		return c.JSON(http.StatusOK, removed)
 	}
 
-	return errors.New("Supplied user_id does not match the post's creator id")
+	return errors.New("Supplied UserID does not match the post's creator id")
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 
 	r "github.com/dancannon/gorethink"
 )
@@ -115,4 +116,23 @@ func filterFromTable(table string, filter interface{}) (interface{}, error) {
 	}
 
 	return ans, nil
+}
+
+func createTable(table string, indices []string) error {
+	res, err := r.DB(dbName).TableCreate(table).RunWrite(session)
+	if err != nil {
+		return err
+	}
+
+	if res.TablesCreated == 1 {
+		for _, str := range indices {
+			res, err = r.DB(dbName).Table(table).IndexCreate(str).RunWrite(session)
+			if err != nil {
+				fmt.Println(err.Error())
+				return err
+			}
+		}
+	}
+
+	return nil
 }
