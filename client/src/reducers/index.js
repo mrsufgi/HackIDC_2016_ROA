@@ -6,7 +6,7 @@ import app from './App';
 const rootReducer = combineReducers({
 	app,
 	routing,
-	authenticationReducer
+	user: authenticationReducer
 });
 
 export default rootReducer;

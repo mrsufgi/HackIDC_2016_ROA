@@ -1,6 +1,5 @@
 import React from 'react';
 import NavBar from '../components/NavBar.jsx';
-import { connect } from 'react-redux';
 
 require('../../css/style.css');
 
@@ -19,8 +18,4 @@ var App = React.createClass({
 	}
 });
 
-const mapStateToProps = function(state) {
-	console.log(state);
-	return Object.assign({}, state.app, state.routing);
-};
-export default connect(mapStateToProps)(App);
+export default App;
