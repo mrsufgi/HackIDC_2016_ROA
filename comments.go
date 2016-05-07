@@ -12,12 +12,12 @@ import (
 )
 
 type Comment struct {
-	createTime  int64
-	editTime    int64
-	creatorId   string
-	creatorName string
-	postId      string
-	content     string
+	CreateTime  int64  `json:"CreateTime" gorethink:"CreateTime`
+	EditTime    int64  `json:"EditTime" gorethink:"EditTime"`
+	CreatorId   string `json:"CreatorId" gorethink:"CreatorId"`
+	CreatorName string `json:"CreatorName" gorethink:"CreatorName"`
+	PostId      string `json:"PostId" gorethink:"PostId"`
+	Content     string `json:"Content" gorethink:"Content"`
 }
 
 var commentsTable string = "comments"
@@ -34,24 +34,30 @@ func createCommentsTable() error {
 	return createTable(commentsTable, indices)
 }
 
-func getLastComments(c echo.Context) error {
+func getComments(c echo.Context) error {
 	count, _ := strconv.Atoi(c.Param(count))
+	id := c.Param(id)
 
-	cur, err := r.DB(dbName).Table(commentsTable).OrderBy(r.OrderByOpts{
-		Index: r.Desc(createTime),
-	}).Limit(count).Run(session)
-
-	if err != nil {
-		return err
-	}
-
-	res, err := getAllDataFromCursor(cur)
+	res, err := fetchComments(id, count)
 
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, res)
+}
+
+func fetchComments(id string, count int) (interface{}, error) {
+	filterMap := map[string]string{
+		postId: id,
+	}
+	cur, err := r.DB(dbName).Table(commentsTable).Filter(filterMap).OrderBy(r.Desc(createTime)).Limit(count).Run(session)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return getAllDataFromCursor(cur)
 }
 
 func getTopComments(c echo.Context) error {
@@ -60,10 +66,12 @@ func getTopComments(c echo.Context) error {
 }
 
 func getAllComments(c echo.Context) error {
+	fmt.Println("Getting all comments")
 	cur, err := r.DB(dbName).Table(commentsTable).OrderBy(r.OrderByOpts{
 		Index: r.Desc(createTime),
 	}).Run(session)
 
+	debugPrinter("Cursor", cur)
 	if err != nil {
 		fmt.Printf("Failed to get ordered comments. Error: $s\n", err.Error())
 		return err
@@ -84,15 +92,14 @@ func getAllComments(c echo.Context) error {
 
 func createComment(c echo.Context) error {
 	comm := &Comment{
-		createTime: time.Now().Unix(),
-		editTime:   time.Now().Unix(),
+		CreateTime: time.Now().Unix(),
+		EditTime:   time.Now().Unix(),
 	}
 
 	if err := c.Bind(comm); err != nil {
 		return err
 	}
 
-	//	fmt.Printf("Comment to create: %s", comm)
 	ans, err := insertToTable(commentsTable, comm)
 	if err != nil {
 		return err

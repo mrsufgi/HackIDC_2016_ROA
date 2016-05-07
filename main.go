@@ -15,23 +15,24 @@ import (
 
 	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo/engine/standard"
+	_ "golang.org/x/net/websocket"
 )
 
 var (
-	createTime  = "createTime"
-	editTime    = "editTime"
-	creatorId   = "creatorId"
-	creatorName = "creatorName"
-	title       = "title"
-	imageUrl    = "imageUrl"
-	postId      = "postId"
+	createTime  = "CreateTime"
+	editTime    = "EditTime"
+	creatorId   = "CreatorId"
+	creatorName = "CreatorName"
+	title       = "Title"
+	imageUrl    = "ImageUrl"
+	postId      = "PostId"
+	userId      = "UserId"
+	commentId   = "CommentId"
+	username    = "Username"
+	password    = "Password"
+	content     = "Content"
 	count       = "count"
 	id          = "id"
-	userId      = "userId"
-	commentId   = "commentId"
-	userName    = "userName"
-	password    = "password"
-	content     = "content"
 )
 
 // Initialize Port and DB Connection config
@@ -70,6 +71,7 @@ func createTables() {
 	createLikesTable()
 	createCommentsTable()
 	createPostsTable()
+	createUsersTable()
 }
 
 func main() {
@@ -86,7 +88,7 @@ func main() {
 	app.Use(middleware.Recover())
 	app.Use(middleware.Logger())
 	app.Use(middleware.Gzip())
-	//app.Use(middleware.Static("public"))
+	app.Use(middleware.Static("public"))
 
 	// Users Routes
 	app.POST("/users", createUser)
@@ -98,13 +100,23 @@ func main() {
 	app.GET("/comment/:id/likes", getCommentLikes)
 	app.GET("/comment/:id", getComment)
 	app.GET("/comment/all", getAllComments)
-	app.GET("/comment/head/:count", getLastComments)
 	app.GET("/comment/top_rated/:count", getTopComments)
 	app.POST("/comment/create", createComment)
 	app.POST("/comment/delete", deleteComment)
 	app.POST("/comment/like", likeComment)
 	app.POST("/comment/edit", editComment)
 
+	// Posts Routes
+	app.GET("/post/:id/head/:count", getComments)
+	app.POST("/post/create", createPost)
+	app.GET("/post/:id", getPost)
+	app.GET("/post/all", getAllPosts)
+	app.POST("/post/edit", editPost)
+
+	// Feed Routes
+	app.GET("/feed/get/:count", getFeed)
+
+	//app.GET("/feed", standard.WrapHandler(websocket.Handler(feedHandler)))
 	// Login route
 	app.POST("/login", login)
 

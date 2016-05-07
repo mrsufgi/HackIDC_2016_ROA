@@ -7,8 +7,8 @@ import (
 )
 
 type Like struct {
-	userId    string
-	commentId string
+	UserId    string `json:"UserId" gorethink:"UserId"`
+	CommentId string `json:"CommentId" gorethink:"CommentId"`
 }
 
 var likesTable string = "likes"
@@ -28,10 +28,9 @@ func likeComment(c echo.Context) error {
 		return err
 	}
 
-	userIdLocal, commentIdLocal := userId, commentId
 	filterMap := map[string]string{
-		userId:    data[userIdLocal],
-		commentId: data[commentIdLocal],
+		userId:    data[userId],
+		commentId: data[commentId],
 	}
 	ans, err := filterFromTable(likesTable, filterMap)
 
@@ -39,8 +38,8 @@ func likeComment(c echo.Context) error {
 	// TODO add verification for UserID and CommentID
 	if len(arr) == 0 {
 		like := &Like{
-			userId:    data[userId],
-			commentId: data[commentId],
+			UserId:    data[userId],
+			CommentId: data[commentId],
 		}
 		_, err = insertToTable(likesTable, like)
 	} else {
@@ -56,21 +55,23 @@ func likeComment(c echo.Context) error {
 	// Gotta set this so c.Param("id") will work
 	// in getcommentLikes()
 	c.SetParamNames("id")
-	c.SetParamValues(data[commentIdLocal])
+	c.SetParamValues(data[commentId])
 
 	return getCommentLikes(c)
 }
 
 func getCommentLikes(c echo.Context) error {
-	filterMap := map[string]string{
-		commentId: c.Param(id),
-	}
-
-	ans, err := filterFromTable(likesTable, filterMap)
-
+	ans, err := fetchCommentLikes(c.Param(id))
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest)
+	}
+	return c.JSON(http.StatusOK, ans)
+}
+
+func fetchCommentLikes(id string) (interface{}, error) {
+	filterMap := map[string]string{
+		commentId: id,
 	}
 
-	return c.JSON(http.StatusOK, ans)
+	return filterFromTable(likesTable, filterMap)
 }

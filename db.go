@@ -100,7 +100,6 @@ func getAllDataFromCursor(c *r.Cursor) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return res, nil
 }
 
