@@ -1,4 +1,4 @@
-let initialState = {};
+let initialState = {app: 'test'};
 
 export default function app(state = initialState, action) {
 	switch (action.type) {

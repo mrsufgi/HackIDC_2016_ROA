@@ -9,14 +9,6 @@ var NavBar = React.createClass({
 		user: React.PropTypes.object,
 		style: React.PropTypes.string
 	},
-	getInitialState: function() {
-		console.log('props', this.props.user);
-		return (
-		{
-			user: this.props.user
-		}
-		);
-	},
 	render() {
 		return (
 			<Navbar inverse>

@@ -1,11 +1,11 @@
 import React from 'react';
 import NavBar from '../components/NavBar.jsx';
-import { connect } from 'react-redux';
+
 require('../../css/style.css');
 
 var App = React.createClass({
 	propTypes: {
-		children: React.PropTypes.element,
+		children: React.PropTypes.any,
 		user: React.PropTypes.object
 	},
 	render() {
@@ -18,7 +18,4 @@ var App = React.createClass({
 	}
 });
 
-function mapStateToProps(state) {
-	return state;
-}
-export default connect(mapStateToProps)(App);
+export default App;

@@ -9,14 +9,14 @@ import routes from './routes';
 import configureStore from './store/configureStore';
 
 let initialState = {
-	user: '123'
+	// user: '123'
 };
 const store = configureStore(initialState);
 const history = syncHistoryWithStore(browserHistory, store);
 
 render(
 	<Provider store={store}>
-		<Router routes={routes} history={history} />
+		<Router routes={routes} history={history}/>
 	</Provider>,
 	document.getElementById('app')
 );
