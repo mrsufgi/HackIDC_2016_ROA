@@ -52,8 +52,12 @@ var NavBar = React.createClass({
 							</NavDropdown>
 						</Nav>) : (
 						<Nav pullRight>
-							<NavItem href='#'>Sign-in</NavItem>
-							<NavItem href='#'>Sign-up</NavItem>
+							<LinkContainer to='/signin'>
+								<NavItem href='#'>Sign-in</NavItem>
+							</LinkContainer>
+							<LinkContainer to='/signup'>
+								<NavItem href='#'>Sign-up</NavItem>
+							</LinkContainer>
 						</Nav>
 					)}
 				</Navbar.Collapse>
