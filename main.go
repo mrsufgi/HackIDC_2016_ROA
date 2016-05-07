@@ -19,20 +19,20 @@ import (
 )
 
 var (
-	createTime  = "createTime"
-	editTime    = "editTime"
-	creatorId   = "creatorId"
-	creatorName = "creatorName"
-	title       = "title"
-	imageUrl    = "imageUrl"
-	postId      = "postId"
+	createTime  = "CreateTime"
+	editTime    = "EditTime"
+	creatorId   = "CreatorId"
+	creatorName = "CreatorName"
+	title       = "Title"
+	imageUrl    = "ImageUrl"
+	postId      = "PostId"
+	userId      = "UserId"
+	commentId   = "CommentId"
+	username    = "Username"
+	password    = "Password"
+	content     = "Content"
 	count       = "count"
 	id          = "id"
-	userId      = "userId"
-	commentId   = "commentId"
-	username    = "userName"
-	password    = "password"
-	content     = "content"
 )
 
 // Initialize Port and DB Connection config
@@ -100,12 +100,20 @@ func main() {
 	app.GET("/comment/:id/likes", getCommentLikes)
 	app.GET("/comment/:id", getComment)
 	app.GET("/comment/all", getAllComments)
-	app.GET("/comment/head/:count", getLastComments)
 	app.GET("/comment/top_rated/:count", getTopComments)
 	app.POST("/comment/create", createComment)
 	app.POST("/comment/delete", deleteComment)
 	app.POST("/comment/like", likeComment)
 	app.POST("/comment/edit", editComment)
+
+	// Posts Routes
+	app.GET("/post/:id/head/:count", getComments)
+	app.POST("/post/create", createPost)
+	app.GET("/post/:id", getPost)
+	app.GET("/post/all", getAllPosts)
+
+	// Feed Routes
+	app.GET("/feed/get/:count", getFeed)
 
 	//app.GET("/feed", standard.WrapHandler(websocket.Handler(feedHandler)))
 	// Login route

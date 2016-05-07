@@ -12,12 +12,12 @@ import (
 )
 
 type Post struct {
-	createTime  int64
-	editTime    int64
-	creatorId   string
-	creatorName string
-	title       string
-	imageUrl    string
+	CreateTime  int64  `json:"CreateTime" gorethink:"CreateTime`
+	EditTime    int64  `json:"EditTime" gorethink:"EditTime"`
+	CreatorId   string `json:"CreatorId" gorethink:"CreatorId"`
+	CreatorName string `json:"CreatorName" gorethink:"CreatorName"`
+	Title       string `json:"Title" gorethink:"Title"`
+	ImageUrl    string `json:"ImageUrl" gorethink:"ImageUrl"`
 }
 
 var postsTable string = "posts"
@@ -95,14 +95,15 @@ func getPostComments(c echo.Context) error {
 
 func createPost(c echo.Context) error {
 	p := &Post{
-		createTime: time.Now().Unix(),
-		editTime:   time.Now().Unix(),
+		CreateTime: time.Now().Unix(),
+		EditTime:   time.Now().Unix(),
 	}
 
 	if err := c.Bind(p); err != nil {
 		return c.JSON(http.StatusBadRequest, nil)
 	}
 
+	debugPrinter("Post", p)
 	ans, err := insertToTable(postsTable, p)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, nil)
