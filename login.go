@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	r "github.com/dancannon/gorethink"
 
 	_ "github.com/auth0/go-jwt-middleware"

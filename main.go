@@ -66,11 +66,22 @@ func main() {
 	app.Use(middleware.Gzip())
 	//app.Use(middleware.Static("public"))
 
-	// Routes
+	// Users Routes
 	app.POST("/users", createUser)
 	app.GET("/users/:id", getUser)
 	app.PUT("/users/:id", updateUser)
 	app.DELETE("/users/:id", deleteUser)
+
+	// Posts Routes
+	app.GET("/likes/:id", getPostLikes)
+	app.GET("/post/:id", getPost)
+	app.GET("/all_posts", getAllPosts)
+	app.GET("/posts/:num", getLastPosts)
+	app.POST("/post/:id", editPost)
+	app.POST("/create_post", createPost)
+	app.POST("/delete_post", deletePost)
+	app.POST("/like_post", likePost)
+	app.POST("/edit_post", editPost)
 
 	// Login route
 	app.POST("/login", login)

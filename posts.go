@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -9,21 +11,31 @@ import (
 	"github.com/labstack/echo"
 )
 
+type Like struct {
+	UserID string `json:"user_id"`
+	PostID string `json:"post_id"`
+}
+
 type Post struct {
-	ID         int               `json:"post_id"`
 	CreateTime int64             `json:"create_time"`
 	EditTime   int64             `json:"edit_time"`
-	CreatorID  int               `json:"creator_id"`
+	CreatorID  string            `json:"creator_id"`
 	Content    string            `json:"content"`
 	Likes      map[string]string `json:"likes"`
 }
 
 var postsTable string = "posts"
+var likesTable string = "likes"
 
-//var (
-//	posts    = map[int]*Post{}
-//	post_seq = 1
-//)
+func CreatePostsTable(c echo.Context) error {
+	// TODO
+	return nil
+}
+
+func CreateLikesTable(c echo.Context) error {
+	// TODO
+	return nil
+}
 
 func getLastPosts(c echo.Context) error {
 	num, _ := strconv.Atoi(c.Param("num"))
@@ -35,32 +47,29 @@ func getLastPosts(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	res := make(chan interface{}, num)
-	var next interface{}
-	for i := 0; i < num; i++ {
-		if !cur.Next(&next) {
-			break
-		}
-		res <- next
+
+	res, err := getDataFromCursor(cur, num)
+
+	if err != nil {
+		return err
 	}
 
-	close(res)
-	ans := make([]interface{}, len(res))
-	i := 0
-	for elem := range res {
-		ans[i] = elem
-		i++
-	}
-
-	return c.JSON(http.StatusOK, ans)
+	return c.JSON(http.StatusOK, res)
 }
 
 func getAllPosts(c echo.Context) error {
-	cur, err := r.DB("test").Table(postsTable).OrderBy(r.OrderByOpts{
+	cur, err := r.DB(dbName).Table(postsTable).OrderBy(r.OrderByOpts{
 		Index: r.Desc("CreateTime"),
 	}).Run(session)
-	var res []interface{}
-	err = cur.All(&res)
+
+	if err != nil {
+		return err
+	}
+	if cur == nil {
+		errors.New("Error getting all posts. The cursor is nil!")
+	}
+
+	res, err := getAllDataFromCursor(cur)
 	if err != nil {
 		return err
 	}
@@ -69,69 +78,129 @@ func getAllPosts(c echo.Context) error {
 }
 
 func likePost(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	u := new(user)
-	if err := c.Bind(u); err != nil {
+	data := make(map[string]string)
+	err := c.Bind(&data)
+	if err != nil {
 		return err
 	}
 
-	suid := strconv.Itoa(u.UserID)
-	if _, ok := posts[id].Likes[suid]; !ok {
-		posts[id].Likes[suid] = u.Name
+	userId, postId := "user_id", "post_id"
+	filterMap := map[string]string{
+		"UserID": data[userId],
+		"PostID": data[postId],
+	}
+	ans, err := filterFromTable(likesTable, filterMap)
+
+	arr := ans.([]interface{})
+	// TODO add verification for user_id and post_id
+	if len(arr) == 0 {
+		like := &Like{
+			UserID: data[userId],
+			PostID: data[postId],
+		}
+		_, err = insertToTable(likesTable, like)
 	} else {
-		delete(posts[id].Likes, suid)
+		// All this just to get the uid from the returned object :(
+		id := ans.([]interface{})[0].(map[string]interface{})["id"].(string)
+		_, err = removeFromTable(likesTable, id)
 	}
 
-	return c.JSON(http.StatusOK, posts[id])
+	if err != nil {
+		return err
+	}
+
+	return getPostLikes(c)
+}
+
+func getPostLikes(c echo.Context) error {
+	filterMap := map[string]string{
+		"PostID": c.Param("id"),
+	}
+
+	ans, err := filterFromTable(likesTable, filterMap)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, ans)
 }
 
 func createPost(c echo.Context) error {
 	p := &Post{
-		ID:         post_seq,
 		CreateTime: time.Now().Unix(),
 		EditTime:   time.Now().Unix(),
 	}
+
 	if err := c.Bind(p); err != nil {
 		return err
 	}
 
-	posts[p.ID] = p
-	post_seq++
-	return c.JSON(http.StatusCreated, p)
+	ans, err := insertToTable(postsTable, p)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusCreated, ans)
 }
 
 func getPost(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	return c.JSON(http.StatusOK, posts[id])
+	fmt.Println(c.Param("id"))
+	ans, err := getFromTable(postsTable, c.Param("id"))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(ans)
+	return c.JSON(http.StatusOK, ans)
 }
 
 func editPost(c echo.Context) error {
-	editor := new(user)
-	if err := c.Bind(editor); err != nil {
+	data := make(map[string]interface{})
+	err := c.Bind(&data)
+	if err != nil {
 		return err
 	}
-	p := new(Post)
-	if err := c.Bind(p); err != nil {
+	// TODO filter data to contain only existing fields, nothing new
+	res, err := updateFieldInTable(postsTable, data["id"].(string), data)
+	if err != nil {
 		return err
 	}
 
-	id, _ := strconv.Atoi(c.Param("id"))
-	if editor.UserID == posts[id].CreatorID {
-		posts[id].Content = p.Content
-		posts[id].EditTime = time.Now()
-		return c.JSON(http.StatusOK, posts[id])
-	} else {
-		return c.JSON(http.StatusUnauthorized, posts[id])
-	}
+	return c.JSON(http.StatusOK, res)
 }
 
 func deletePost(c echo.Context) error {
-	creator := new(user)
-	if err := c.Bind(creator); err != nil {
+	data := make(map[string]interface{})
+	err := c.Bind(&data)
+	if err != nil {
 		return err
 	}
-	// TODO check post id same as user id
-	id, _ := strconv.Atoi(c.Param("id"))
-	delete(posts, id)
-	return c.NoContent(http.StatusNoContent)
+
+	UserID, ok := data["user_id"].(string)
+	if !ok {
+		return errors.New("user_id of the post creator must be supplied in order to delete a post")
+	}
+	PostID, ok := data["post_id"].(string)
+	if !ok {
+		return errors.New("post_id must be supplied in order to delete a post")
+	}
+
+	res, err := getFromTable(postsTable, PostID)
+	if err != nil {
+		return err
+	}
+	if res == nil {
+		return errors.New("No such post exists!")
+	}
+	if res.(map[string]interface{})["CreatorID"].(string) == UserID {
+		removed, err := removeFromTable(postsTable, PostID)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, removed)
+	}
+
+	return errors.New("Supplied user_id does not match the post's creator id")
 }

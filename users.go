@@ -1,12 +1,14 @@
 package main
 
 import (
-	_ "fmt"
+	"fmt"
+
 	r "github.com/dancannon/gorethink"
 
-	"github.com/labstack/echo"
 	"net/http"
 	_ "strconv"
+
+	"github.com/labstack/echo"
 )
 
 type (
