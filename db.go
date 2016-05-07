@@ -116,3 +116,21 @@ func filterFromTable(table string, filter interface{}) (interface{}, error) {
 
 	return ans, nil
 }
+
+func createTable(table string, indices []string) error {
+	res, err := r.DB(dbName).TableCreate(table).RunWrite(session)
+	if err != nil {
+		return err
+	}
+
+	if res.Created == 1 {
+		for _, str := range indices {
+			res, err = r.DB(dbName).Table(likesTable).IndexCreate(str).RunWrite(session)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}

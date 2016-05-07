@@ -71,16 +71,16 @@ func main() {
 	app.PUT("/users/:id", updateUser)
 	app.DELETE("/users/:id", deleteUser)
 
-	// Posts Routes
-	app.GET("/likes/:id", getPostLikes)
-	app.GET("/post/:id", getPost)
-	app.GET("/all_posts", getAllPosts)
-	app.GET("/posts/:num", getLastPosts)
-	app.POST("/post/:id", editPost)
-	app.POST("/create_post", createPost)
-	app.POST("/delete_post", deletePost)
-	app.POST("/like_post", likePost)
-	app.POST("/edit_post", editPost)
+	// Comments Routes
+	app.GET("/likes/:id", getCommentLikes)
+	app.GET("/comment/:id", getComment)
+	app.GET("/all_comments", getAllComments)
+	app.GET("/comments/:num", getLastComments)
+	app.POST("/comment/:id", editComment)
+	app.POST("/create_comment", createComment)
+	app.POST("/delete_comment", deleteComment)
+	app.POST("/like_comment", likeComment)
+	app.POST("/edit_comment", editComment)
 
 	// Login route
 	app.POST("/login", login)

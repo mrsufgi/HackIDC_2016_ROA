@@ -11,30 +11,27 @@ import (
 	"github.com/labstack/echo"
 )
 
-type Like struct {
-	UserID string `json:"user_id"`
-	PostID string `json:"post_id"`
-}
-
 type Post struct {
-	CreateTime int64             `json:"create_time"`
-	EditTime   int64             `json:"edit_time"`
-	CreatorID  string            `json:"creator_id"`
-	Content    string            `json:"content"`
-	Likes      map[string]string `json:"likes"`
+	CreateTime  int64  `json:"create_time"`
+	EditTime    int64  `json:"edit_time"`
+	CreatorID   string `json:"creator_id"`
+	CreatorName string `json:"creator_name"`
+	Title       string `json:"title"`
+	ImageUrl    string `json:"image_url"`
 }
 
 var postsTable string = "posts"
-var likesTable string = "likes"
 
 func CreatePostsTable(c echo.Context) error {
-	// TODO
-	return nil
-}
-
-func CreateLikesTable(c echo.Context) error {
-	// TODO
-	return nil
+	indices := []string{
+		"CreateTime",
+		"EditTime",
+		"CreatorID",
+		"CreatorName",
+		"Title",
+		"ImageUrl",
+	}
+	return createTable(postsTable, indices)
 }
 
 func getLastPosts(c echo.Context) error {
@@ -75,41 +72,6 @@ func getAllPosts(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, res)
-}
-
-func likePost(c echo.Context) error {
-	data := make(map[string]string)
-	err := c.Bind(&data)
-	if err != nil {
-		return err
-	}
-
-	userId, postId := "user_id", "post_id"
-	filterMap := map[string]string{
-		"UserID": data[userId],
-		"PostID": data[postId],
-	}
-	ans, err := filterFromTable(likesTable, filterMap)
-
-	arr := ans.([]interface{})
-	// TODO add verification for user_id and post_id
-	if len(arr) == 0 {
-		like := &Like{
-			UserID: data[userId],
-			PostID: data[postId],
-		}
-		_, err = insertToTable(likesTable, like)
-	} else {
-		// All this just to get the uid from the returned object :(
-		id := ans.([]interface{})[0].(map[string]interface{})["id"].(string)
-		_, err = removeFromTable(likesTable, id)
-	}
-
-	if err != nil {
-		return err
-	}
-
-	return getPostLikes(c)
 }
 
 func getPostLikes(c echo.Context) error {
@@ -161,6 +123,7 @@ func editPost(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	data["EditTime"] = time.Now().Unix()
 	// TODO filter data to contain only existing fields, nothing new
 	res, err := updateFieldInTable(postsTable, data["id"].(string), data)
 	if err != nil {
