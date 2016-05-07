@@ -34,24 +34,28 @@ func createPostsTable() error {
 	return createTable(postsTable, indices)
 }
 
-func getLastPosts(c echo.Context) error {
-	num, _ := strconv.Atoi(c.Param(count))
+func getPosts(c echo.Context) error {
+	count, _ := strconv.Atoi(c.Param(count))
 
-	cur, err := r.DB(dbName).Table(postsTable).OrderBy(r.OrderByOpts{
-		Index: r.Desc(createTime),
-	}).Limit(num).Run(session)
-
-	if err != nil {
-		return err
-	}
-
-	res, err := getAllDataFromCursor(cur)
+	res, err := fetchPosts(count)
 
 	if err != nil {
 		return err
 	}
 
 	return c.JSON(http.StatusOK, res)
+}
+
+func fetchPosts(count int) (interface{}, error) {
+	cur, err := r.DB(dbName).Table(postsTable).OrderBy(r.OrderByOpts{
+		Index: r.Desc(createTime),
+	}).Limit(count).Run(session)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return getAllDataFromCursor(cur)
 }
 
 func getAllPosts(c echo.Context) error {

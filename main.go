@@ -29,7 +29,7 @@ var (
 	id          = "id"
 	userId      = "userId"
 	commentId   = "commentId"
-	userName    = "userName"
+	username    = "userName"
 	password    = "password"
 	content     = "content"
 )
@@ -70,6 +70,7 @@ func createTables() {
 	createLikesTable()
 	createCommentsTable()
 	createPostsTable()
+	createUsersTable()
 }
 
 func main() {

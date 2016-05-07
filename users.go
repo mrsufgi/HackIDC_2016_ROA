@@ -15,26 +15,26 @@ var usersTable string = "users"
 type user struct {
 	userId   string
 	password string
-	userName string
+	username string
 }
 
 func createUsersTable() error {
 	indices := []string{
 		userId,
 		password,
-		userName,
+		username,
 	}
 	return createTable(usersTable, indices)
 }
 
-func isUserUnique(userName string) bool {
-	res, err := r.Table(usersTable).GetAllByIndex(userName, userName).Run(session)
+func isUserUnique(userNameInput string) bool {
+	res, err := r.Table(usersTable).GetAllByIndex(userNameInput, username).Run(session)
 	if err != nil {
 		//fmt.Print(err)
 		return false
 	}
 
-	if res.IsNil() {
+	if res == nil {
 		//fmt.Print("Entry wasn't found")
 		return true
 	}
@@ -52,7 +52,7 @@ func createUser(c echo.Context) error {
 		return err
 	}
 
-	if isUserUnique(u.userName) {
+	if isUserUnique(u.username) {
 		// db
 		r.Table(usersTable).Insert(u).RunWrite(session)
 
@@ -108,7 +108,7 @@ func getUsernameByID(idInput string) string {
 		log.Printf("Error scanning database result: %s", err)
 		return ""
 	}
-	return result[userName].(string)
+	return result[username].(string)
 }
 
 func updateUser(c echo.Context) error {
