@@ -29,6 +29,9 @@ var (
 	id          = "id"
 	userId      = "userId"
 	commentId   = "commentId"
+	userName    = "userName"
+	password    = "password"
+	content     = "content"
 )
 
 // Initialize Port and DB Connection config

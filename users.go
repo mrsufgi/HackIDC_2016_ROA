@@ -1,31 +1,34 @@
 package main
 
 import (
-	r "github.com/dancannon/gorethink"
-
+	_ "fmt"
+	"log"
 	"net/http"
 	_ "strconv"
 
-	_ "fmt"
-	"log"
-
+	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo"
 )
 
-type (
-	user struct {
-		ID       string `gorethink:"id,omitempty"`
-		Password string `gorethink:"password"`
-		Username string `gorethink:"username"`
+var usersTable string = "users"
+
+type user struct {
+	userId   string
+	password string
+	userName string
+}
+
+func createUsersTable() error {
+	indices := []string{
+		userId,
+		password,
+		userName,
 	}
-)
+	return createTable(usersTable, indices)
+}
 
-var (
-	users = map[string]*user{}
-)
-
-func userUniq(username string) bool {
-	res, err := r.Table("Users").GetAllByIndex("username", username).Run(session)
+func isUserUnique(userName string) bool {
+	res, err := r.Table(usersTable).GetAllByIndex(userName, userName).Run(session)
 	if err != nil {
 		//fmt.Print(err)
 		return false
@@ -49,10 +52,9 @@ func createUser(c echo.Context) error {
 		return err
 	}
 
-	if userUniq(u.Username) {
-
+	if isUserUnique(u.userName) {
 		// db
-		r.Table("Users").Insert(u).RunWrite(session)
+		r.Table(usersTable).Insert(u).RunWrite(session)
 
 		return c.JSON(http.StatusCreated, u)
 	}
@@ -61,21 +63,21 @@ func createUser(c echo.Context) error {
 }
 
 func getUserByProp(index string, value string) (*r.Cursor, error) {
-	res, err := r.Table("Users").GetAllByIndex(index, value).Run(session)
+	res, err := r.Table(usersTable).GetAllByIndex(index, value).Run(session)
 	return res, err
 }
 
 func getUser(c echo.Context) error {
-	id := c.Param("id")
+	idLocal := c.Param(id)
 
-	res, err := getUserByProp("id", id)
+	res, err := getUserByProp(id, idLocal)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
 	if res.IsNil() {
-		log.Println(id + "not found")
+		log.Println(idLocal + " not found")
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
 
@@ -88,15 +90,15 @@ func getUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func getUsernameByID(id string) string {
-	res, err := getUserByProp("id", id)
+func getUsernameByID(idInput string) string {
+	res, err := getUserByProp(id, idInput)
 	if err != nil {
 		log.Println(err)
 		return ""
 	}
 
 	if res.IsNil() {
-		log.Println(id + "not found")
+		log.Println(idInput + " not found")
 		return ""
 	}
 
@@ -106,7 +108,7 @@ func getUsernameByID(id string) string {
 		log.Printf("Error scanning database result: %s", err)
 		return ""
 	}
-	return result["username"].(string)
+	return result[userName].(string)
 }
 
 func updateUser(c echo.Context) error {
@@ -114,8 +116,8 @@ func updateUser(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	id := c.Param("id")
-	res, err := r.Table("Users").Get(id).Update(u).RunWrite(session)
+	idLocal := c.Param(id)
+	res, err := r.Table(usersTable).Get(idLocal).Update(u).RunWrite(session)
 	if err != nil {
 		log.Printf("Error updating database: %s", err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
@@ -124,8 +126,8 @@ func updateUser(c echo.Context) error {
 }
 
 func deleteUser(c echo.Context) error {
-	id := c.Param("id")
-	_, err := r.Table("Users").Get(id).Delete().RunWrite(session)
+	idLocal := c.Param(id)
+	_, err := r.Table(usersTable).Get(idLocal).Delete().RunWrite(session)
 	if err != nil {
 		log.Print("Error deleting entry: %s", err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
