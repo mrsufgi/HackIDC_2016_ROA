@@ -1,0 +1,69 @@
+.roast-card-header{
+    color:red;
+}
+.roast-card{
+
+}
+.roast-card-img{
+    padding: 0;
+    width:100%;
+    border-radius: 5px;
+    display: block;
+    margin:0 auto;
+}
+.no-style,.no-style:visited{
+    float: right;
+    color:rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-family: cursive;
+    transition: all 0.2s ease;
+}
+.no-style:hover,.no-style:link, .no-style:hover, .no-style:focus, .no-style:active{
+    text-decoration: none;
+    color: rgba(255,255,0,0.9);
+}
+.no-style:focus, button:focus{
+    outline:none;
+}
+.shadow {
+    moz-box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.1);
+}
+.line-after:after{
+    content: "";
+    position: absolute;
+    height: 5px;
+    border-bottom: 1px solid white;
+    border-top: 1px solid white;
+    top: 0;
+    width: 600px;
+}
+table, tr, td, p{
+    margin:0 auto;
+    padding: 0;
+}
+.comments-table-cell{
+    border-bottom: 0.2px solid rgba(0,0,0,0.15);
+}
+
+.see-more{
+    left: 38%;
+    margin: 0 auto;
+    border-top-color: transparent;
+    position: absolute;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+}
+.no-outline:hover,.no-outline:link, .no-outline:hover, .no-outline:focus, .no-outline:active{
+    outline: none;
+}
+.cursor-pointer{
+    cursor: pointer;
+}
+.roast-likes{
+    transition: all 0.2s ease;
+}
+.roast-likes:hover, .roast-likes-done{
+    background-color: rgba(150,235,150,0.9);
+}
