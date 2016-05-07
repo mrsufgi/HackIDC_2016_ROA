@@ -10,7 +10,7 @@ import (
 func getFeed(c echo.Context) {
 	count, _ := strconv.Atoi(c.Param(count))
 
-	posts, err := fetchPosts(count)
+	_, err := fetchPosts(count)
 	if err != nil {
 		echo.NewHTTPError(http.StatusBadRequest)
 	}

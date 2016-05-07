@@ -10,12 +10,12 @@ import (
 	"github.com/mewben/config-echo"
 	//_ "github.com/lib/pq"
 	//"github.com/mewben/db-go-env"
-	"fmt"
 	_ "fmt"
+	"log"
+
 	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo/engine/standard"
-	"golang.org/x/net/websocket"
-	"log"
+	_ "golang.org/x/net/websocket"
 )
 
 var (
