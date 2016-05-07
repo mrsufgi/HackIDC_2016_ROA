@@ -1,10 +1,34 @@
-hash: d9a524a92ffedf646b285d462a9c189bffa035e9469796918be1c027f1ef1c57
-updated: 2016-05-06T13:25:59.4996795+03:00
+hash: 019d0b49cca239955656242740d324d01041227b1cb3b4f453c398bb03409c8c
+updated: 2016-05-07T12:40:54.2303023+03:00
 imports:
+- name: github.com/auth0/go-jwt-middleware
+  version: f3f7de3b9e394e3af3b88e1b9457f6f71d1ae0ac
+  subpackages:
+  - github.com\auth0\go-jwt-middleware
+- name: github.com/cenkalti/backoff
+  version: c29158af31815ccc31ca29c86c121bc39e00d3d8
+  subpackages:
+  - github.com\cenkalti\backoff
+- name: github.com/dancannon/gorethink
+  version: 3742792da4bc279ccd6d807f24687009cbeda860
+  subpackages:
+  - github.com\dancannon\gorethink
 - name: github.com/dgrijalva/jwt-go
   version: 40bd0f3b4891a9d7f121bfb7b8e8b0525625e262
   subpackages:
   - github.com\dgrijalva\jwt-go
+- name: github.com/golang/protobuf
+  version: 7cc19b78d562895b13596ddce7aafb59dd789318
+  subpackages:
+  - github.com\golang\protobuf\proto
+- name: github.com/gorilla/context
+  version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
+  subpackages:
+  - github.com\gorilla\context
+- name: github.com/hailocab/go-hostpool
+  version: e80d13ce29ede4452c43dea11e79b9bc8a15b478
+  subpackages:
+  - github.com\hailocab\go-hostpool
 - name: github.com/klauspost/compress
   version: 14eb9c4951195779ecfbec34431a976de7335b0a
   subpackages:
@@ -20,12 +44,13 @@ imports:
   subpackages:
   - github.com\klauspost\crc32
 - name: github.com/labstack/echo
-  version: 986338c805dcaf0aea0ffe2da2b3a57e1c6741b9
+  version: 37f05202e8d94977ef9563050630cfb473d07e76
   subpackages:
   - engine/fasthttp
   - middleware
   - github.com\labstack\echo
   - github.com\labstack\echo\engine\fasthttp
+  - github.com\labstack\echo\engine\standard
   - github.com\labstack\echo\middleware
   - github.com\labstack\echo\engine
 - name: github.com/labstack/gommon
@@ -46,20 +71,38 @@ imports:
   version: bd68349f8624a3b42e21fd1ed87736bf6284c8b8
   subpackages:
   - github.com\mewben\config-echo
+- name: github.com/Sirupsen/logrus
+  version: cd7d1bbe41066b6c1f19780f895901052150a575
+  subpackages:
+  - github.com\Sirupsen\logrus
 - name: github.com/valyala/fasthttp
-  version: 7304bdd09c6c12e6c25714f68c121256957bc367
+  version: fcba2aa2f2a878517d0084ba29fcf5c09940dbb5
   subpackages:
   - github.com\valyala\fasthttp
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
   subpackages:
   - github.com\valyala\fasttemplate
+- name: golang.org/x/crypto
+  version: 47ff8dfbc528fea3003fc0ce2d88ffbbfbc46a43
+  subpackages:
+  - golang.org\x\crypto\pbkdf2
 - name: golang.org/x/net
-  version: 7e42c0e1329bb108f7376a7618a2871ab90f1c4d
+  version: 2a35e686583654a1b89ca79c4ac78cb3d6529ca3
   subpackages:
   - golang.org\x\net\context
 - name: golang.org/x/sys
   version: b776ec39b3e54652e09028aaaaac9757f4f8211a
   subpackages:
   - golang.org\x\sys\unix
+- name: gopkg.in/dancannon/gorethink.v2
+  version: 3742792da4bc279ccd6d807f24687009cbeda860
+  subpackages:
+  - gopkg.in\dancannon\gorethink.v2\encoding
+  - gopkg.in\dancannon\gorethink.v2\ql2
+  - gopkg.in\dancannon\gorethink.v2\types
+- name: gopkg.in/fatih/pool.v2
+  version: cba550ebf9bce999a02e963296d4bc7a486cb715
+  subpackages:
+  - gopkg.in\fatih\pool.v2
 devImports: []
