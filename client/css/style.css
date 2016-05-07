@@ -46,3 +46,12 @@ table, tr, td, p{
 .comments-table-cell{
     border-bottom: 0.2px solid rgba(0,0,0,0.15);
 }
+
+.see-more{
+    left: 38%;
+    margin: 0 auto;
+    border-top-color: transparent;
+    position: absolute;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+}
