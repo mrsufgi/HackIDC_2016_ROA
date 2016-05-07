@@ -18,33 +18,33 @@ func getFeed(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	debugPrinter("All posts", posts)
+	//	debugPrinter("All posts", posts)
 	postsMap := posts.([]interface{})
 	for _, post := range postsMap {
-		debugPrinter("Post in the loop", post)
+		//		debugPrinter("Post in the loop", post)
 		comments, err := fetchComments(post.(map[string]interface{})[id].(string), defaultCount)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		debugPrinter("All fetched comments", comments)
+		//		debugPrinter("All fetched comments", comments)
 
-		post.(map[string]interface{})["comments"] = comments
-		debugPrinter("Post after updating with comments", post)
+		//		debugPrinter("Post after updating with comments", post)
 		commentsMap := comments.([]interface{})
-		for comment := range commentsMap {
-			debugPrinter("Comment inside comments loop", comment)
-			//			likes, err := fetchCommentLikes(comment[id].(string))
+		for _, comment := range commentsMap {
+			//			debugPrinter("Comment inside comments loop", comment)
+			likes, err := fetchCommentLikes(comment.(map[string]interface{})[id].(string))
 
-			//			if err != nil {
-			//				return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-			//			}
-			//			debugPrinter(likes)
-			//			comment["likes"] = likes
+			if err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+			}
+			//			debugPrinter("Found likes", likes)
+			comment.(map[string]interface{})["Likes"] = likes
 
-			//			debugPrinter(comment)
+			//			debugPrinter("comment after adding likes", comment)
 		}
+		post.(map[string]interface{})["Comments"] = comments
 	}
-	debugPrinter("Posts after updating all fields", posts)
+	//	debugPrinter("Posts after updating all fields", posts)
 	return c.JSON(http.StatusOK, posts)
 }
 

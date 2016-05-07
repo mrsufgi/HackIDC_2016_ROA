@@ -61,15 +61,17 @@ func likeComment(c echo.Context) error {
 }
 
 func getCommentLikes(c echo.Context) error {
-	filterMap := map[string]string{
-		commentId: c.Param(id),
-	}
-
-	ans, err := filterFromTable(likesTable, filterMap)
-
+	ans, err := fetchCommentLikes(c.Param(id))
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest)
+	}
+	return c.JSON(http.StatusOK, ans)
+}
+
+func fetchCommentLikes(id string) (interface{}, error) {
+	filterMap := map[string]string{
+		commentId: id,
 	}
 
-	return c.JSON(http.StatusOK, ans)
+	return filterFromTable(likesTable, filterMap)
 }

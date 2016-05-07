@@ -111,6 +111,7 @@ func main() {
 	app.POST("/post/create", createPost)
 	app.GET("/post/:id", getPost)
 	app.GET("/post/all", getAllPosts)
+	app.POST("/post/edit", editPost)
 
 	// Feed Routes
 	app.GET("/feed/get/:count", getFeed)
