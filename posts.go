@@ -12,40 +12,40 @@ import (
 )
 
 type Post struct {
-	CreateTime  int64  `json:"CreateTime"`
-	EditTime    int64  `json:"EditTime"`
-	CreatorID   string `json:"CreatorID"`
-	CreatorName string `json:"CreatorName"`
-	Title       string `json:"Title"`
-	ImageUrl    string `json:"ImageUrl"`
+	createTime  int64
+	editTime    int64
+	creatorId   string
+	creatorName string
+	title       string
+	imageUrl    string
 }
 
 var postsTable string = "posts"
 
 func createPostsTable() error {
 	indices := []string{
-		"CreateTime",
-		"EditTime",
-		"CreatorID",
-		"CreatorName",
-		"Title",
-		"ImageUrl",
+		createTime,
+		editTime,
+		creatorId,
+		creatorName,
+		title,
+		imageUrl,
 	}
 	return createTable(postsTable, indices)
 }
 
 func getLastPosts(c echo.Context) error {
-	num, _ := strconv.Atoi(c.Param("num"))
+	num, _ := strconv.Atoi(c.Param(count))
 
 	cur, err := r.DB(dbName).Table(postsTable).OrderBy(r.OrderByOpts{
-		Index: r.Desc("CreateTime"),
-	}).Run(session)
+		Index: r.Desc(createTime),
+	}).Limit(num).Run(session)
 
 	if err != nil {
 		return err
 	}
 
-	res, err := getDataFromCursor(cur, num)
+	res, err := getAllDataFromCursor(cur)
 
 	if err != nil {
 		return err
@@ -56,14 +56,15 @@ func getLastPosts(c echo.Context) error {
 
 func getAllPosts(c echo.Context) error {
 	cur, err := r.DB(dbName).Table(postsTable).OrderBy(r.OrderByOpts{
-		Index: r.Desc("CreateTime"),
+		Index: r.Desc(createTime),
 	}).Run(session)
 
 	if err != nil {
 		return err
 	}
 	if cur == nil {
-		errors.New("Error getting all posts. The cursor is nil!")
+		return c.JSON(http.StatusNoContent,
+			errors.New("Error getting all posts. The cursor is nil!"))
 	}
 
 	res, err := getAllDataFromCursor(cur)
@@ -76,7 +77,7 @@ func getAllPosts(c echo.Context) error {
 
 func getPostComments(c echo.Context) error {
 	filterMap := map[string]string{
-		"PostID": c.Param("id"),
+		postId: c.Param(id),
 	}
 
 	ans, err := filterFromTable(commentsTable, filterMap)
@@ -90,27 +91,27 @@ func getPostComments(c echo.Context) error {
 
 func createPost(c echo.Context) error {
 	p := &Post{
-		CreateTime: time.Now().Unix(),
-		EditTime:   time.Now().Unix(),
+		createTime: time.Now().Unix(),
+		editTime:   time.Now().Unix(),
 	}
 
 	if err := c.Bind(p); err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, nil)
 	}
 
 	ans, err := insertToTable(postsTable, p)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
 	return c.JSON(http.StatusCreated, ans)
 }
 
 func getPost(c echo.Context) error {
-	fmt.Println(c.Param("id"))
-	ans, err := getFromTable(postsTable, c.Param("id"))
+	fmt.Println(c.Param(id))
+	ans, err := getFromTable(postsTable, c.Param(id))
 	if err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	fmt.Println(ans)
@@ -123,9 +124,9 @@ func editPost(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	data["EditTime"] = time.Now().Unix()
+	data[editTime] = time.Now().Unix()
 	// TODO filter data to contain only existing fields, nothing new
-	res, err := updateFieldInTable(postsTable, data["id"].(string), data)
+	res, err := updateFieldInTable(postsTable, data[id].(string), data)
 	if err != nil {
 		return err
 	}
@@ -140,11 +141,11 @@ func deletePost(c echo.Context) error {
 		return err
 	}
 
-	UserID, ok := data["UserID"].(string)
+	UserID, ok := data[userId].(string)
 	if !ok {
 		return errors.New("UserID of the post creator must be supplied in order to delete a post")
 	}
-	PostID, ok := data["PostID"].(string)
+	PostID, ok := data[postId].(string)
 	if !ok {
 		return errors.New("PostID must be supplied in order to delete a post")
 	}
@@ -156,10 +157,10 @@ func deletePost(c echo.Context) error {
 	if res == nil {
 		return errors.New("No such post exists!")
 	}
-	if res.(map[string]interface{})["CreatorID"].(string) == UserID {
+	if res.(map[string]interface{})[creatorId].(string) == UserID {
 		removed, err := removeFromTable(postsTable, PostID)
 		if err != nil {
-			return err
+			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
 
 		return c.JSON(http.StatusOK, removed)

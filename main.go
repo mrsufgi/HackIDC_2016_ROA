@@ -17,6 +17,23 @@ import (
 	"github.com/labstack/echo/engine/standard"
 )
 
+var (
+	createTime  = "createTime"
+	editTime    = "editTime"
+	creatorId   = "creatorId"
+	creatorName = "creatorName"
+	title       = "title"
+	imageUrl    = "imageUrl"
+	postId      = "postId"
+	count       = "count"
+	id          = "id"
+	userId      = "userId"
+	commentId   = "commentId"
+	userName    = "userName"
+	password    = "password"
+	content     = "content"
+)
+
 // Initialize Port and DB Connection config
 func init() {
 	type Config struct {
@@ -78,15 +95,15 @@ func main() {
 	app.DELETE("/users/:id", deleteUser)
 
 	// Comments Routes
-	app.GET("/likes/:id", getCommentLikes)
+	app.GET("/comment/:id/likes", getCommentLikes)
 	app.GET("/comment/:id", getComment)
-	app.GET("/all_comments", getAllComments)
-	app.GET("/comments/:num", getLastComments)
-	app.POST("/comment/:id", editComment)
-	app.POST("/create_comment", createComment)
-	app.POST("/delete_comment", deleteComment)
-	app.POST("/like_comment", likeComment)
-	app.POST("/edit_comment", editComment)
+	app.GET("/comment/all", getAllComments)
+	app.GET("/comment/head/:count", getLastComments)
+	app.GET("/comment/top_rated/:count", getTopComments)
+	app.POST("/comment/create", createComment)
+	app.POST("/comment/delete", deleteComment)
+	app.POST("/comment/like", likeComment)
+	app.POST("/comment/edit", editComment)
 
 	// Login route
 	app.POST("/login", login)
