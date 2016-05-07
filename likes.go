@@ -7,16 +7,16 @@ import (
 )
 
 type Like struct {
-	UserID    string `json:"userID"`
-	CommentID string `json:"commentID"`
+	userId    string
+	commentId string
 }
 
 var likesTable string = "likes"
 
 func createLikesTable() error {
 	indices := []string{
-		"userID",
-		"commentID",
+		userId,
+		commentId,
 	}
 	return createTable(likesTable, indices)
 }
@@ -28,10 +28,10 @@ func likeComment(c echo.Context) error {
 		return err
 	}
 
-	userId, commentId := "userID", "commentID"
+	userIdLocal, commentIdLocal := userId, commentId
 	filterMap := map[string]string{
-		"userID":    data[userId],
-		"commentID": data[commentId],
+		userId:    data[userIdLocal],
+		commentId: data[commentIdLocal],
 	}
 	ans, err := filterFromTable(likesTable, filterMap)
 
@@ -39,14 +39,14 @@ func likeComment(c echo.Context) error {
 	// TODO add verification for UserID and CommentID
 	if len(arr) == 0 {
 		like := &Like{
-			UserID:    data[userId],
-			CommentID: data[commentId],
+			userId:    data[userId],
+			commentId: data[commentId],
 		}
 		_, err = insertToTable(likesTable, like)
 	} else {
 		// All this just to get the uid from the returned object :(
-		id := ans.([]interface{})[0].(map[string]interface{})["id"].(string)
-		_, err = removeFromTable(likesTable, id)
+		idLocal := ans.([]interface{})[0].(map[string]interface{})[id].(string)
+		_, err = removeFromTable(likesTable, idLocal)
 	}
 
 	if err != nil {
@@ -56,14 +56,14 @@ func likeComment(c echo.Context) error {
 	// Gotta set this so c.Param("id") will work
 	// in getcommentLikes()
 	c.SetParamNames("id")
-	c.SetParamValues(data[commentId])
+	c.SetParamValues(data[commentIdLocal])
 
 	return getCommentLikes(c)
 }
 
 func getCommentLikes(c echo.Context) error {
 	filterMap := map[string]string{
-		"commentID": c.Param("id"),
+		commentId: c.Param(id),
 	}
 
 	ans, err := filterFromTable(likesTable, filterMap)

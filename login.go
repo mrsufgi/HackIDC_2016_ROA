@@ -18,9 +18,9 @@ func login(c echo.Context) error {
 	password := c.FormValue("password")
 
 	//if username == "jon" && password == "shhh!" {
-	res, _ := r.Table("Users").GetAllByIndex("username", username).Run(session)
+	res, _ := r.Table(usersTable).GetAllByIndex("username", username).Run(session)
 
-	if !res.IsNil() {
+	if res != nil {
 		var pass map[string]interface{}
 		err := res.One(&pass)
 		if err != nil {
