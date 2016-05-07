@@ -1,7 +1,7 @@
 var React = require('react');
 import {FormGroup, ControlLabel, FormControl, Jumbotron, Grid, Row, Col} from 'react-bootstrap';
 
-var SignOut = React.createClass({
+var SignUp = React.createClass({
 	handleSubmit(event) {
 		var data = {
 			username: event.target.username.value,
@@ -53,5 +53,5 @@ var SignOut = React.createClass({
 		);
 	}
 });
-module.exports = SignOut;
+module.exports = SignUp;
 

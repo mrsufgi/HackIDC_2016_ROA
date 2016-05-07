@@ -4,7 +4,7 @@ var Comment = require('../components/Comment.jsx');
 var CommentBox = React.createClass({
 	propTypes: {
 		comments: React.PropTypes.object,
-		children: React.PropTypes.components
+		children: React.PropTypes.any
 	},
 	render() {
 		var postProcessComments = this.props.comments.map((comment) => {

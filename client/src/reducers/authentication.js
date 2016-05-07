@@ -1,7 +1,7 @@
 export default function authenticationReducer(state, action) {
-	action |= {};
 	switch (action.type) {
 		case 'SIGNUP':
+			console.log('signup vi reducer');
 			Object.assign({}, state, {
 				user: {
 					username: action.username,

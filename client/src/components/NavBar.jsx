@@ -13,7 +13,7 @@ var NavBar = React.createClass({
 		console.log('props', this.props.user);
 		return (
 		{
-			user: this.props.user || null
+			user: this.props.user
 		}
 		);
 	},
