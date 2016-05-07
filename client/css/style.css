@@ -54,9 +54,12 @@ table, tr, td, p{
     position: absolute;
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
+    border: none;
+    outline:none;
 }
 .no-outline:hover,.no-outline:link, .no-outline:hover, .no-outline:focus, .no-outline:active{
     outline: none;
+    border: none;
 }
 .cursor-pointer{
     cursor: pointer;
@@ -66,4 +69,8 @@ table, tr, td, p{
 }
 .roast-likes:hover, .roast-likes-done{
     background-color: rgba(150,235,150,0.9);
+}
+
+*:focus {
+    outline: 0 !important;
 }
