@@ -3,9 +3,12 @@ import {FormGroup, ControlLabel, FormControl, Jumbotron, Grid, Row, Col} from 'r
 
 var SignOut = React.createClass({
 	handleSubmit(event) {
+		var data = {
+			username: event.target.username.value,
+			password: event.target.password.value
+		};
 		event.preventDefault();
-		console.log(event.target.username.value);
-		console.log(event.target.password.value);
+		console.log(data);
 	},
 	render() {
 		return (
