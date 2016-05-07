@@ -6,9 +6,18 @@ import { LinkContainer } from 'react-router-bootstrap';
 var NavBar = React.createClass({
 	propTypes: {
 		children: React.PropTypes.element,
+		user: React.PropTypes.object,
 		style: React.PropTypes.string
 	},
+	getInitialState: function() {
+		return (
+		{
+			user: this.props.user || null
+		}
+		);
+	},
 	render() {
+		console.log(this.state.user, 'state');
 		return (
 			<Navbar inverse>
 				<Navbar.Header>
@@ -25,22 +34,32 @@ var NavBar = React.createClass({
 						<NavItem href='#'>Trending</NavItem>
 						<NavItem href='#'>Favorites</NavItem>
 					</Nav>
-					<Nav pullRight>
-						<NavDropdown title='Profile' id='basic-nav-dropdown'>
-							<LinkContainer to='/profile'>
-								<MenuItem>
-									My Profile
-								</MenuItem>
+					{this.state.user ? (
+						<Nav pullRight>
+							<NavDropdown title='Profile' id='basic-nav-dropdown'>
+								<LinkContainer to='/profile'>
+									<MenuItem>
+										My Profile
+									</MenuItem>
+								</LinkContainer>
+								<LinkContainer to='/editProfile'>
+									<MenuItem>
+										Edit Profile
+									</MenuItem>
+								</LinkContainer>
+								<MenuItem divider />
+								<MenuItem>Sign Out</MenuItem>
+							</NavDropdown>
+						</Nav>) : (
+						<Nav pullRight>
+							<LinkContainer to='/signin'>
+								<NavItem href='#'>Sign-in</NavItem>
 							</LinkContainer>
-							<LinkContainer to='/editProfile'>
-								<MenuItem>
-									Edit Profile
-								</MenuItem>
+							<LinkContainer to='/signup'>
+								<NavItem href='#'>Sign-up</NavItem>
 							</LinkContainer>
-							<MenuItem divider />
-							<MenuItem>Sign Out</MenuItem>
-						</NavDropdown>
-					</Nav>
+						</Nav>
+					)}
 				</Navbar.Collapse>
 			</Navbar>
 		);

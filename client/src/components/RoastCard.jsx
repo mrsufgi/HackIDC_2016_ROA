@@ -18,10 +18,11 @@ var RoastCard = React.createClass({
 				<Panel header={<CustomPanelHeader title={this.props.cardData.title} user={this.props.cardData.name}/>} bsStyle='primary' footer={<RoastCardActions id={this.props.cardData.id} />}>
 					<div>
 						<RoastCardPic pic={this.props.cardData.roastPicSrc}></RoastCardPic>
-						<CommentBox comments={this.props.cardData.comments}></CommentBox>
-						<Link to={location}>
-							<SeeMore />
-						</Link>
+						<CommentBox comments={this.props.cardData.comments}>
+							<Link to={location}>
+								<SeeMore />
+							</Link>
+						</CommentBox>
 					</div>
 				</Panel>
 

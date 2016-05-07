@@ -4,7 +4,7 @@ import {Button} from 'react-bootstrap';
 var SeeMore = React.createClass({
 	render() {
 		return (
-			<Button className='see-more no-outline' bsStyle='info'>see more</Button>
+			<Button style={{width: '100%', backgroundColor: 'rgba(0,0,0,0.05)'}}>Read More</Button>
 		);
 	}
 });
