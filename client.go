@@ -5,12 +5,11 @@ import (
 )
 
 type Message struct {
-	Name string `json:"name"`
+	Name string      `json:"name"`
 	Data interface{} `json:"data"`
-
 }
 type Client struct {
-	send chan Message
+	send   chan Message
 	socket *websocket.Conn
 	//findHandler
 }
@@ -34,9 +33,7 @@ func (client *Client) Write() {
 
 func NewClient(socket *websocket.Conn) *Client {
 	return &Client{
-		send: make(chan Message),
+		send:   make(chan Message),
 		socket: socket,
 	}
 }
-
-

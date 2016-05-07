@@ -10,12 +10,12 @@ import (
 	"github.com/mewben/config-echo"
 	//_ "github.com/lib/pq"
 	//"github.com/mewben/db-go-env"
-	_"fmt"
-	"log"
+	"fmt"
+	_ "fmt"
 	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo/engine/standard"
 	"golang.org/x/net/websocket"
-	"fmt"
+	"log"
 )
 
 var (
@@ -113,7 +113,6 @@ func main() {
 
 	// Unauthenticated route
 	app.GET("/", accessible)
-
 
 	// Restricted group
 	b := app.Group("/restricted")
