@@ -10,11 +10,12 @@ import (
 	"github.com/mewben/config-echo"
 	//_ "github.com/lib/pq"
 	//"github.com/mewben/db-go-env"
-	_ "fmt"
+	_"fmt"
 	"log"
-
 	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo/engine/standard"
+	"golang.org/x/net/websocket"
+	"fmt"
 )
 
 // Initialize Port and DB Connection config
@@ -63,7 +64,7 @@ func main() {
 	app.Use(middleware.Recover())
 	app.Use(middleware.Logger())
 	app.Use(middleware.Gzip())
-	//app.Use(middleware.Static("public"))
+	app.Use(middleware.Static("public"))
 
 	// Users Routes
 	app.POST("/users", createUser)
@@ -82,11 +83,13 @@ func main() {
 	app.POST("/like_post", likePost)
 	app.POST("/edit_post", editPost)
 
+	//app.GET("/feed", standard.WrapHandler(websocket.Handler(feedHandler)))
 	// Login route
 	app.POST("/login", login)
 
 	// Unauthenticated route
 	app.GET("/", accessible)
+
 
 	// Restricted group
 	b := app.Group("/restricted")
