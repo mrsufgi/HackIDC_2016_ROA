@@ -1,4 +1,7 @@
 node_modules
 vendor
 
+# app exe
+HackIDC_2016_ROA.exe
+
 *.log

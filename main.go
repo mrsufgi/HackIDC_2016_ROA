@@ -5,11 +5,16 @@ import (
 	"os"
 
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/fasthttp"
+	_ "github.com/labstack/echo/engine/fasthttp"
 	"github.com/labstack/echo/middleware"
 	"github.com/mewben/config-echo"
 	//_ "github.com/lib/pq"
 	//"github.com/mewben/db-go-env"
+	_ "fmt"
+	"log"
+
+	r "github.com/dancannon/gorethink"
+	"github.com/labstack/echo/engine/standard"
 )
 
 // Initialize Port and DB Connection config
@@ -41,13 +46,60 @@ func init() {
 	config.Setup(devConfig.SERVERPORT)
 }
 
-func main() {
-	app := echo.New()
+var session *r.Session
+var dbName string = "RoastMe"
 
+func createTables() {
+	createLikesTable()
+	createCommentsTable()
+	createPostsTable()
+}
+
+func main() {
+	se, err := r.Connect(r.ConnectOpts{
+		Address:  "localhost:28015",
+		Database: dbName,
+	})
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	session = se
+
+	app := echo.New()
 	app.Use(middleware.Recover())
 	app.Use(middleware.Logger())
 	app.Use(middleware.Gzip())
-	app.Use(middleware.Static("public"))
+	//app.Use(middleware.Static("public"))
 
-	app.Run(fasthttp.New(config.Port))
+	// Users Routes
+	app.POST("/users", createUser)
+	app.GET("/users/:id", getUser)
+	app.PUT("/users/:id", updateUser)
+	app.DELETE("/users/:id", deleteUser)
+
+	// Comments Routes
+	app.GET("/likes/:id", getCommentLikes)
+	app.GET("/comment/:id", getComment)
+	app.GET("/all_comments", getAllComments)
+	app.GET("/comments/:num", getLastComments)
+	app.POST("/comment/:id", editComment)
+	app.POST("/create_comment", createComment)
+	app.POST("/delete_comment", deleteComment)
+	app.POST("/like_comment", likeComment)
+	app.POST("/edit_comment", editComment)
+
+	// Login route
+	app.POST("/login", login)
+
+	// Unauthenticated route
+	app.GET("/", accessible)
+
+	// Restricted group
+	b := app.Group("/restricted")
+	b.Use(middleware.JWTAuth([]byte("secret")))
+	b.GET("", restricted)
+
+	createTables()
+
+	app.Run(standard.New(config.Port))
 }

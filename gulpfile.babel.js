@@ -70,7 +70,7 @@ gulp.task('server:spawn', () => {
 		server.kill();
 	}
 
-	server = child.spawn(basename);
+	server = child.spawn('../../bin/' + basename);
 
 	server.stdout.once('data', function() {
 		reload.reload('/');
