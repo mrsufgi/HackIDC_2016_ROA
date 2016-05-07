@@ -55,3 +55,15 @@ table, tr, td, p{
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
 }
+.no-outline:hover,.no-outline:link, .no-outline:hover, .no-outline:focus, .no-outline:active{
+    outline: none;
+}
+.cursor-pointer{
+    cursor: pointer;
+}
+.roast-likes{
+    transition: all 0.2s ease;
+}
+.roast-likes:hover{
+    background-color: rgba(150,235,150,0.9);
+}
