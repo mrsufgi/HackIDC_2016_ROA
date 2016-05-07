@@ -4,12 +4,13 @@ require('../../css/style.css');
 
 var App = React.createClass({
 	propTypes: {
-		children: React.PropTypes.element
+		children: React.PropTypes.element,
+		user: React.PropTypes.object
 	},
 	render() {
 		return (
 			<div>
-				<NavBar />
+				<NavBar user={this.props.user}/>
 				{this.props.children}
 			</div>
 		);
