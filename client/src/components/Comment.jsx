@@ -29,7 +29,7 @@ var Comment = React.createClass({
 						</p>
 					</td>
 					<td className='comments-table-cell'>
-						<Badge onClick={this.vote} className='cursor-pointer roast-likes'>
+						<Badge onClick={this.vote} className={'cursor-pointer roast-likes ' + (this.state.voted ? 'roast-likes-done' : '')}>
 							{this.state.like}
 						</Badge>
 					</td>

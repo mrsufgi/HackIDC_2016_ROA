@@ -64,6 +64,6 @@ table, tr, td, p{
 .roast-likes{
     transition: all 0.2s ease;
 }
-.roast-likes:hover{
+.roast-likes:hover, .roast-likes-done{
     background-color: rgba(150,235,150,0.9);
 }
