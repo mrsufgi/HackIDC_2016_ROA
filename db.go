@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 
 	r "github.com/dancannon/gorethink"
 )
@@ -123,10 +124,11 @@ func createTable(table string, indices []string) error {
 		return err
 	}
 
-	if res.Created == 1 {
+	if res.TablesCreated == 1 {
 		for _, str := range indices {
-			res, err = r.DB(dbName).Table(likesTable).IndexCreate(str).RunWrite(session)
+			res, err = r.DB(dbName).Table(table).IndexCreate(str).RunWrite(session)
 			if err != nil {
+				fmt.Println(err.Error())
 				return err
 			}
 		}

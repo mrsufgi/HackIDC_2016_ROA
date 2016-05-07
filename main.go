@@ -49,6 +49,12 @@ func init() {
 var session *r.Session
 var dbName string = "RoastMe"
 
+func createTables() {
+	createLikesTable()
+	createCommentsTable()
+	createPostsTable()
+}
+
 func main() {
 	se, err := r.Connect(r.ConnectOpts{
 		Address:  "localhost:28015",
@@ -92,6 +98,8 @@ func main() {
 	b := app.Group("/restricted")
 	b.Use(middleware.JWTAuth([]byte("secret")))
 	b.GET("", restricted)
+
+	createTables()
 
 	app.Run(standard.New(config.Port))
 }

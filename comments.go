@@ -12,17 +12,17 @@ import (
 )
 
 type Comment struct {
-	CreateTime  int64  `json:"create_time"`
-	EditTime    int64  `json:"edit_time"`
-	CreatorID   string `json:"creator_id"`
-	CreatorName string `json:"creator_name"`
-	PostID      string `json:"post_id"`
-	Content     string `json:"content"`
+	CreateTime  int64  `json:"CreateTime"`
+	EditTime    int64  `json:"EditTime"`
+	CreatorID   string `json:"CreatorID"`
+	CreatorName string `json:"CreatorName"`
+	PostID      string `json:"PostID"`
+	Content     string `json:"Content"`
 }
 
 var commentsTable string = "comments"
 
-func createCommentsTable(c echo.Context) error {
+func createCommentsTable() error {
 	indices := []string{
 		"CreateTime",
 		"EditTime",
@@ -60,6 +60,7 @@ func getAllComments(c echo.Context) error {
 	}).Run(session)
 
 	if err != nil {
+		fmt.Printf("Failed to get ordered comments. Error: $s\n", err.Error())
 		return err
 	}
 	if cur == nil {
@@ -68,6 +69,7 @@ func getAllComments(c echo.Context) error {
 
 	res, err := getAllDataFromCursor(cur)
 	if err != nil {
+		fmt.Printf("Failed to get all data from cursor. Error: $s\n", err.Error())
 		return err
 	}
 
@@ -75,16 +77,17 @@ func getAllComments(c echo.Context) error {
 }
 
 func createComment(c echo.Context) error {
-	p := &Comment{
+	comm := &Comment{
 		CreateTime: time.Now().Unix(),
 		EditTime:   time.Now().Unix(),
 	}
 
-	if err := c.Bind(p); err != nil {
+	if err := c.Bind(comm); err != nil {
 		return err
 	}
 
-	ans, err := insertToTable(commentsTable, p)
+	fmt.Printf("Comment to create: %s", comm)
+	ans, err := insertToTable(commentsTable, comm)
 	if err != nil {
 		return err
 	}
@@ -126,30 +129,38 @@ func deleteComment(c echo.Context) error {
 		return err
 	}
 
-	UserID, ok := data["user_id"].(string)
+	UserID, ok := data["UserID"].(string)
 	if !ok {
-		return errors.New("user_id of the comment creator must be supplied in order to delete a comment")
+		return errors.New("UserID of the comment creator must be supplied in order to delete a comment")
 	}
-	CommentID, ok := data["comment_id"].(string)
+	CommentID, ok := data["CommentID"].(string)
 	if !ok {
-		return errors.New("comment_id must be supplied in order to delete a comment")
+		err := errors.New("CommentID must be supplied in order to delete a comment")
+		fmt.Println(err.Error())
+		return err
 	}
 
 	res, err := getFromTable(commentsTable, CommentID)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 	if res == nil {
-		return errors.New("No such comment exists!")
+		err := errors.New("No such comment exists!")
+		fmt.Println(err.Error())
+		return err
 	}
 	if res.(map[string]interface{})["CreatorID"].(string) == UserID {
 		removed, err := removeFromTable(commentsTable, CommentID)
 		if err != nil {
+			fmt.Println(err.Error())
 			return err
 		}
 
 		return c.JSON(http.StatusOK, removed)
 	}
 
-	return errors.New("Supplied user_id does not match the comment's creator id")
+	err = errors.New("Supplied UserID does not match the comment's creator id")
+	fmt.Println(err.Error())
+	return err
 }

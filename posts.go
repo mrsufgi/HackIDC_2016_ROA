@@ -12,17 +12,17 @@ import (
 )
 
 type Post struct {
-	CreateTime  int64  `json:"create_time"`
-	EditTime    int64  `json:"edit_time"`
-	CreatorID   string `json:"creator_id"`
-	CreatorName string `json:"creator_name"`
-	Title       string `json:"title"`
-	ImageUrl    string `json:"image_url"`
+	CreateTime  int64  `json:"CreateTime"`
+	EditTime    int64  `json:"EditTime"`
+	CreatorID   string `json:"CreatorID"`
+	CreatorName string `json:"CreatorName"`
+	Title       string `json:"Title"`
+	ImageUrl    string `json:"ImageUrl"`
 }
 
 var postsTable string = "posts"
 
-func CreatePostsTable(c echo.Context) error {
+func createPostsTable() error {
 	indices := []string{
 		"CreateTime",
 		"EditTime",
@@ -37,7 +37,7 @@ func CreatePostsTable(c echo.Context) error {
 func getLastPosts(c echo.Context) error {
 	num, _ := strconv.Atoi(c.Param("num"))
 
-	cur, err := r.DB("test").Table(postsTable).OrderBy(r.OrderByOpts{
+	cur, err := r.DB(dbName).Table(postsTable).OrderBy(r.OrderByOpts{
 		Index: r.Desc("CreateTime"),
 	}).Run(session)
 
@@ -74,12 +74,12 @@ func getAllPosts(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func getPostLikes(c echo.Context) error {
+func getPostComments(c echo.Context) error {
 	filterMap := map[string]string{
 		"PostID": c.Param("id"),
 	}
 
-	ans, err := filterFromTable(likesTable, filterMap)
+	ans, err := filterFromTable(commentsTable, filterMap)
 
 	if err != nil {
 		return err
@@ -140,13 +140,13 @@ func deletePost(c echo.Context) error {
 		return err
 	}
 
-	UserID, ok := data["user_id"].(string)
+	UserID, ok := data["UserID"].(string)
 	if !ok {
-		return errors.New("user_id of the post creator must be supplied in order to delete a post")
+		return errors.New("UserID of the post creator must be supplied in order to delete a post")
 	}
-	PostID, ok := data["post_id"].(string)
+	PostID, ok := data["PostID"].(string)
 	if !ok {
-		return errors.New("post_id must be supplied in order to delete a post")
+		return errors.New("PostID must be supplied in order to delete a post")
 	}
 
 	res, err := getFromTable(postsTable, PostID)
@@ -165,5 +165,5 @@ func deletePost(c echo.Context) error {
 		return c.JSON(http.StatusOK, removed)
 	}
 
-	return errors.New("Supplied user_id does not match the post's creator id")
+	return errors.New("Supplied UserID does not match the post's creator id")
 }

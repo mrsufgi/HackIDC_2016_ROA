@@ -7,13 +7,13 @@ import (
 )
 
 type Like struct {
-	UserID    string `json:"user_id"`
-	CommentID string `json:"comment_id"`
+	UserID    string `json:"UserID"`
+	CommentID string `json:"CommentID"`
 }
 
 var likesTable string = "likes"
 
-func CreateLikesTable(c echo.Context) error {
+func createLikesTable() error {
 	indices := []string{
 		"UserID",
 		"CommentID",
@@ -28,7 +28,7 @@ func likeComment(c echo.Context) error {
 		return err
 	}
 
-	userId, commentId := "user_id", "comment_id"
+	userId, commentId := "UserID", "CommentID"
 	filterMap := map[string]string{
 		"UserID":    data[userId],
 		"CommentID": data[commentId],
@@ -36,7 +36,7 @@ func likeComment(c echo.Context) error {
 	ans, err := filterFromTable(likesTable, filterMap)
 
 	arr := ans.([]interface{})
-	// TODO add verification for user_id and comment_id
+	// TODO add verification for UserID and CommentID
 	if len(arr) == 0 {
 		like := &Like{
 			UserID:    data[userId],
@@ -52,6 +52,11 @@ func likeComment(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	// Gotta set this so c.Param("id") will work in
+	// getcommentLikes()
+	c.SetParamNames("id")
+	c.SetParamValues(data[commentId])
 
 	return getCommentLikes(c)
 }
