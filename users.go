@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
-
 	r "github.com/dancannon/gorethink"
 
 	"net/http"
 	_ "strconv"
+
+	_ "fmt"
+	"log"
 
 	"github.com/labstack/echo"
 )
@@ -26,12 +27,12 @@ var (
 func userUniq(username string) bool {
 	res, err := r.Table("Users").GetAllByIndex("username", username).Run(session)
 	if err != nil {
-		fmt.Print(err)
+		//fmt.Print(err)
 		return false
 	}
 
 	if res.IsNil() {
-		fmt.Print("Entry wasn't found")
+		//fmt.Print("Entry wasn't found")
 		return true
 	}
 	defer res.Close()
@@ -59,10 +60,53 @@ func createUser(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusConflict)
 }
 
+func getUserByProp(index string, value string) (*r.Cursor, error) {
+	res, err := r.Table("Users").GetAllByIndex(index, value).Run(session)
+	return res, err
+}
+
 func getUser(c echo.Context) error {
 	id := c.Param("id")
 
-	return c.JSON(http.StatusOK, users[id])
+	res, err := getUserByProp("id", id)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	if res.IsNil() {
+		log.Println(id + "not found")
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
+
+	var result map[string]interface{}
+	err = res.One(&result)
+	if err != nil {
+		log.Printf("Error scanning database result: %s", err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	return c.JSON(http.StatusOK, result)
+}
+
+func getUsernameByID(id string) string {
+	res, err := getUserByProp("id", id)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+
+	if res.IsNil() {
+		log.Println(id + "not found")
+		return ""
+	}
+
+	var result map[string]interface{}
+	err = res.One(&result)
+	if err != nil {
+		log.Printf("Error scanning database result: %s", err)
+		return ""
+	}
+	return result["username"].(string)
 }
 
 func updateUser(c echo.Context) error {
@@ -71,12 +115,20 @@ func updateUser(c echo.Context) error {
 		return err
 	}
 	id := c.Param("id")
-	users[id].Username = u.Username
-	return c.JSON(http.StatusOK, users[id])
+	res, err := r.Table("Users").Get(id).Update(u).RunWrite(session)
+	if err != nil {
+		log.Printf("Error updating database: %s", err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+	return c.JSON(http.StatusOK, res)
 }
 
 func deleteUser(c echo.Context) error {
 	id := c.Param("id")
-	delete(users, id)
+	_, err := r.Table("Users").Get(id).Delete().RunWrite(session)
+	if err != nil {
+		log.Print("Error deleting entry: %s", err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
 	return c.NoContent(http.StatusNoContent)
 }
