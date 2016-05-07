@@ -30,3 +30,19 @@
     -webkit-box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.1);
     box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.1);
 }
+.line-after:after{
+    content: "";
+    position: absolute;
+    height: 5px;
+    border-bottom: 1px solid white;
+    border-top: 1px solid white;
+    top: 0;
+    width: 600px;
+}
+table, tr, td, p{
+    margin:0 auto;
+    padding: 0;
+}
+.comments-table-cell{
+    border-bottom: 0.2px solid rgba(0,0,0,0.15);
+}

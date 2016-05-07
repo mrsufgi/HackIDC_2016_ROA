@@ -16,12 +16,14 @@ var Feed = React.createClass({
 			roastPicSrc: 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xaf1/v/t1.0-1/p160x160/11898648_10207488666114110_1556072271457749853_n.jpg?oh=cf32c5a9d4cf727242c7de8bbf1e7e03&oe=57B4AED5&__gda__=1474549326_40ee7ad9336e48a8d66cece017b1e6c0',
 			comments: [
 				{
-					content: 'Haha you\'re fat!',
-					user: '',
-					score: {
-						up: 5,
-						down: 9
-					}
+					content: 'Haha you\'re fat!Haha you\'re fat!Haha you\'re fat!Haha you\'re fat!Haha you\'re fat!Haha you\'re fat!',
+					user: 'jason23',
+					like: 245
+				},
+				{
+					content: 'Fuck you man!',
+					user: 'nigga1738',
+					like: 6
 				}
 			]
 		}

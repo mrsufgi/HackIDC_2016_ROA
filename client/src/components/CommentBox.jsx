@@ -1,22 +1,20 @@
 var React = require('react');
+var Comment = require('../components/Comment.jsx');
 
 var CommentBox = React.createClass({
 	propTypes: {
-		comments: React.PropTypes.array
+		comments: React.PropTypes.object
 	},
 	render() {
 		var postProcessComments = this.props.comments.map((comment) => {
 			return (
-				<li>
-					<p>{comment.content}</p>
-					<p>{comment.user}</p>
-				</li>
+				<Comment className='line-after' comment={comment}></Comment>
 			);
 		});
 		return (
-			<ul>
+			<div>
 				{postProcessComments}
-			</ul>
+			</div>
 		);
 	}
 });
