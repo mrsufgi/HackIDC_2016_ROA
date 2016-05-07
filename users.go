@@ -1,12 +1,12 @@
 package main
 
 import (
-	_"fmt"
+	"fmt"
+	_ "fmt"
 	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo"
-	"net/http"
 	"log"
-	"fmt"
+	"net/http"
 )
 
 type (
@@ -59,7 +59,7 @@ func createUser(c echo.Context) error {
 
 func getUserByProp(index string, value string) (*r.Cursor, error) {
 	res, err := r.Table("Users").GetAllByIndex(index, value).Run(session)
-	return res, err;
+	return res, err
 }
 
 func getUser(c echo.Context) error {

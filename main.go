@@ -10,11 +10,11 @@ import (
 	//_ "github.com/lib/pq"
 	//"github.com/mewben/db-go-env"
 
+	"fmt"
 	_ "fmt"
 	r "github.com/dancannon/gorethink"
 	"github.com/labstack/echo/engine/standard"
 	"log"
-	"fmt"
 )
 
 // Initialize Port and DB Connection config
