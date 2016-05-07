@@ -35,23 +35,28 @@ func createCommentsTable() error {
 }
 
 func getLastComments(c echo.Context) error {
-	num, _ := strconv.Atoi(c.Param("num"))
+	count, _ := strconv.Atoi(c.Param("count"))
 
 	cur, err := r.DB(dbName).Table(commentsTable).OrderBy(r.OrderByOpts{
 		Index: r.Desc("CreateTime"),
-	}).Run(session)
+	}).Limit(count).Run(session)
 
 	if err != nil {
 		return err
 	}
 
-	res, err := getDataFromCursor(cur, num)
+	res, err := getAllDataFromCursor(cur)
 
 	if err != nil {
 		return err
 	}
 
 	return c.JSON(http.StatusOK, res)
+}
+
+func getCommentsByLikes(c echo.Context) error {
+	// TODO
+	return nil
 }
 
 func getAllComments(c echo.Context) error {

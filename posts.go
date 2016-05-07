@@ -39,13 +39,13 @@ func getLastPosts(c echo.Context) error {
 
 	cur, err := r.DB(dbName).Table(postsTable).OrderBy(r.OrderByOpts{
 		Index: r.Desc("CreateTime"),
-	}).Run(session)
+	}).Limit(num).Run(session)
 
 	if err != nil {
 		return err
 	}
 
-	res, err := getDataFromCursor(cur, num)
+	res, err := getAllDataFromCursor(cur)
 
 	if err != nil {
 		return err
