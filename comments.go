@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -12,33 +13,33 @@ import (
 )
 
 type Comment struct {
-	CreateTime  int64  `json:"CreateTime"`
-	EditTime    int64  `json:"EditTime"`
-	CreatorID   string `json:"CreatorID"`
-	CreatorName string `json:"CreatorName"`
-	PostID      string `json:"PostID"`
-	Content     string `json:"Content"`
+	createTime  int64
+	editTime    int64
+	creatorId   string
+	creatorName string
+	postId      string
+	content     string
 }
 
 var commentsTable string = "comments"
 
 func createCommentsTable() error {
 	indices := []string{
-		"CreateTime",
-		"EditTime",
-		"CreatorID",
-		"CreatorName",
-		"PostID",
-		"Content",
+		createTime,
+		editTime,
+		creatorId,
+		creatorName,
+		postId,
+		content,
 	}
 	return createTable(commentsTable, indices)
 }
 
 func getLastComments(c echo.Context) error {
-	count, _ := strconv.Atoi(c.Param("count"))
+	count, _ := strconv.Atoi(c.Param(count))
 
 	cur, err := r.DB(dbName).Table(commentsTable).OrderBy(r.OrderByOpts{
-		Index: r.Desc("CreateTime"),
+		Index: r.Desc(createTime),
 	}).Limit(count).Run(session)
 
 	if err != nil {
@@ -54,22 +55,23 @@ func getLastComments(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func getCommentsByLikes(c echo.Context) error {
+func getTopComments(c echo.Context) error {
 	// TODO
 	return nil
 }
 
 func getAllComments(c echo.Context) error {
 	cur, err := r.DB(dbName).Table(commentsTable).OrderBy(r.OrderByOpts{
-		Index: r.Desc("CreateTime"),
+		Index: r.Desc(createTime),
 	}).Run(session)
 
 	if err != nil {
 		fmt.Printf("Failed to get ordered comments. Error: $s\n", err.Error())
 		return err
 	}
+
 	if cur == nil {
-		errors.New("Error getting all comments. The cursor is nil!")
+		return c.JSON(http.StatusNoContent, nil)
 	}
 
 	res, err := getAllDataFromCursor(cur)
@@ -83,15 +85,15 @@ func getAllComments(c echo.Context) error {
 
 func createComment(c echo.Context) error {
 	comm := &Comment{
-		CreateTime: time.Now().Unix(),
-		EditTime:   time.Now().Unix(),
+		createTime: time.Now().Unix(),
+		editTime:   time.Now().Unix(),
 	}
 
 	if err := c.Bind(comm); err != nil {
 		return err
 	}
 
-	fmt.Printf("Comment to create: %s", comm)
+	//	fmt.Printf("Comment to create: %s", comm)
 	ans, err := insertToTable(commentsTable, comm)
 	if err != nil {
 		return err
@@ -101,8 +103,8 @@ func createComment(c echo.Context) error {
 }
 
 func getComment(c echo.Context) error {
-	fmt.Println(c.Param("id"))
-	ans, err := getFromTable(commentsTable, c.Param("id"))
+	fmt.Println(c.Param(id))
+	ans, err := getFromTable(commentsTable, c.Param(id))
 	if err != nil {
 		return err
 	}
@@ -117,9 +119,9 @@ func editComment(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	data["EditTime"] = time.Now().Unix()
+	data[editTime] = time.Now().Unix()
 	// TODO filter data to contain only existing fields, nothing new
-	res, err := updateFieldInTable(commentsTable, data["id"].(string), data)
+	res, err := updateFieldInTable(commentsTable, data[id].(string), data)
 	if err != nil {
 		return err
 	}
@@ -134,18 +136,18 @@ func deleteComment(c echo.Context) error {
 		return err
 	}
 
-	UserID, ok := data["UserID"].(string)
+	userIdLocal, ok := data[userId].(string)
 	if !ok {
 		return errors.New("UserID of the comment creator must be supplied in order to delete a comment")
 	}
-	CommentID, ok := data["CommentID"].(string)
+	commentIdLocal, ok := data[commentId].(string)
 	if !ok {
 		err := errors.New("CommentID must be supplied in order to delete a comment")
 		fmt.Println(err.Error())
 		return err
 	}
 
-	res, err := getFromTable(commentsTable, CommentID)
+	res, err := getFromTable(commentsTable, commentIdLocal)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
@@ -155,8 +157,8 @@ func deleteComment(c echo.Context) error {
 		fmt.Println(err.Error())
 		return err
 	}
-	if res.(map[string]interface{})["CreatorID"].(string) == UserID {
-		removed, err := removeFromTable(commentsTable, CommentID)
+	if res.(map[string]interface{})[creatorId].(string) == userIdLocal {
+		removed, err := removeFromTable(commentsTable, commentIdLocal)
 		if err != nil {
 			fmt.Println(err.Error())
 			return err

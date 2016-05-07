@@ -17,6 +17,20 @@ import (
 	"github.com/labstack/echo/engine/standard"
 )
 
+var (
+	createTime  = "createTime"
+	editTime    = "editTime"
+	creatorId   = "creatorId"
+	creatorName = "creatorName"
+	title       = "title"
+	imageUrl    = "imageUrl"
+	postId      = "postId"
+	count       = "count"
+	id          = "id"
+	userId      = "userId"
+	commentId   = "commentId"
+)
+
 // Initialize Port and DB Connection config
 func init() {
 	type Config struct {
@@ -82,7 +96,7 @@ func main() {
 	app.GET("/comment/:id", getComment)
 	app.GET("/comment/all", getAllComments)
 	app.GET("/comment/head/:count", getLastComments)
-	app.GET("/comment/top_rated/:count", getTopRatedComments)
+	app.GET("/comment/top_rated/:count", getTopComments)
 	app.POST("/comment/create", createComment)
 	app.POST("/comment/delete", deleteComment)
 	app.POST("/comment/like", likeComment)
