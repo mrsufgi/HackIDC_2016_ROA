@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "fmt"
+	"fmt"
 	"log"
 	"net/http"
 	_ "strconv"
@@ -13,9 +13,9 @@ import (
 var usersTable string = "users"
 
 type user struct {
-	userId   string
-	password string
-	username string
+	UserId   string `json:"UserId"`
+	Password string `json:"Password"`
+	Username string `json:"Username"`
 }
 
 func createUsersTable() error {
@@ -28,16 +28,18 @@ func createUsersTable() error {
 }
 
 func isUserUnique(userNameInput string) bool {
-	res, err := r.Table(usersTable).GetAllByIndex(userNameInput, username).Run(session)
+	res, err := r.DB(dbName).Table(usersTable).GetAllByIndex(username, userNameInput).Run(session)
+
 	if err != nil {
-		//fmt.Print(err)
+		fmt.Print(err.Error())
 		return false
 	}
 
-	if res == nil {
+	if res.IsNil() {
 		//fmt.Print("Entry wasn't found")
 		return true
 	}
+
 	defer res.Close()
 	return false
 }
@@ -52,7 +54,7 @@ func createUser(c echo.Context) error {
 		return err
 	}
 
-	if isUserUnique(u.username) {
+	if isUserUnique(u.Username) {
 		// db
 		r.Table(usersTable).Insert(u).RunWrite(session)
 

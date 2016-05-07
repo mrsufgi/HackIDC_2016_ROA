@@ -20,7 +20,7 @@ func login(c echo.Context) error {
 	//if username == "jon" && password == "shhh!" {
 	res, _ := r.Table(usersTable).GetAllByIndex("username", username).Run(session)
 
-	if res != nil {
+	if !res.IsNil() {
 		var pass map[string]interface{}
 		err := res.One(&pass)
 		if err != nil {
