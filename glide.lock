@@ -1,5 +1,5 @@
 hash: 019d0b49cca239955656242740d324d01041227b1cb3b4f453c398bb03409c8c
-updated: 2016-05-07T12:40:54.2303023+03:00
+updated: 2016-05-07T17:38:18.1285953+03:00
 imports:
 - name: github.com/auth0/go-jwt-middleware
   version: f3f7de3b9e394e3af3b88e1b9457f6f71d1ae0ac
@@ -25,6 +25,10 @@ imports:
   version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
   subpackages:
   - github.com\gorilla\context
+- name: github.com/gorilla/websocket
+  version: 1f512fc3f05332ba7117626cdfb4e07474e58e60
+  subpackages:
+  - github.com\gorilla\websocket
 - name: github.com/hailocab/go-hostpool
   version: e80d13ce29ede4452c43dea11e79b9bc8a15b478
   subpackages:
@@ -90,6 +94,7 @@ imports:
 - name: golang.org/x/net
   version: 2a35e686583654a1b89ca79c4ac78cb3d6529ca3
   subpackages:
+  - golang.org\x\net\websocket
   - golang.org\x\net\context
 - name: golang.org/x/sys
   version: b776ec39b3e54652e09028aaaaac9757f4f8211a
